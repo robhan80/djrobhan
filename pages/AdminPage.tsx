@@ -165,16 +165,36 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
         });
     };
 
+    // FIX: Corrected property access from `localContent.section[section]` to `localContent[section]`.
+    // Also, added default values for newly created items to prevent uncontrolled component errors in React.
     const handleAddItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery') => {
         const newItem: any = { id: crypto.randomUUID() };
-        
-        if (section === 'gallery') {
+
+        if (section === 'playlist') {
+            newItem.title = 'Nytt Spor';
+            newItem.artist = 'Artist';
+            newItem.sourceType = 'mp3';
+            newItem.src = '';
+        } else if (section === 'testimonials') {
+            newItem.quote = '';
+            newItem.name = '';
+            newItem.event = '';
+        } else if (section === 'socialLinks') {
+            newItem.name = 'Ny Lenke';
+            newItem.url = '#';
+            newItem.icon = '';
+        } else if (section === 'services') {
+            newItem.title = 'Ny Tjeneste';
+            newItem.description = '';
+            newItem.icon = '';
+        } else if (section === 'gallery') {
             newItem.type = 'image';
             newItem.src = '';
             newItem.title = '';
         }
 
-        handleChange(section, [...localContent[section], newItem]);
+        const items = localContent[section] as any[];
+        handleChange(section, [...items, newItem]);
     };
 
     const handleDeleteItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections', id: string) => {
@@ -255,7 +275,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
         const item = newOrder[index];
         const swapIndex = direction === 'up' ? index - 1 : index + 1;
         
-        if (swapIndex >= 0 && swapIndex < newOrder.length) {
+        if (swapIndex >= 0 && swapIndex < newOrder.length && newOrder[swapIndex].type !== 'home') {
             newOrder[index] = newOrder[swapIndex];
             newOrder[swapIndex] = item;
             handleChange('sectionOrder', newOrder);
@@ -298,6 +318,35 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
         );
     }
 
+    const SectionControls: React.FC<{section: SectionConfig, index: number}> = ({ section, index }) => (
+      <div className="flex items-center gap-4 flex-wrap justify-end">
+          <div className="flex items-center gap-2">
+              <input
+                  type="checkbox"
+                  id={`showTitle-${section.id}`}
+                  checked={section.showTitle}
+                  onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+              />
+              <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
+          </div>
+          <div className="flex items-center gap-2">
+              <input
+                  type="checkbox"
+                  id={`enabled-${section.id}`}
+                  checked={section.enabled}
+                  onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+              />
+              <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
+          </div>
+          <div className="space-x-1">
+              <button onClick={() => handleSectionOrderChange(index, 'up')} disabled={index === 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Opp</button>
+              <button onClick={() => handleSectionOrderChange(index, 'down')} disabled={index === localContent.sectionOrder.length - 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Ned</button>
+          </div>
+      </div>
+    );
+    
     return (
         <div className="py-20 bg-dark-1">
             <TemplateModal isOpen={isTemplateModalOpen} onClose={() => setIsTemplateModalOpen(false)} onSelect={handleAddCustomSectionFromTemplate} />
@@ -315,7 +364,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                 <div className="space-y-10">
                     {/* General Info, Logo & Theme */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Generell Info, Logo & Farger</legend>
+                        <legend className="text-2xl font-bold text-white px-2 mb-4">Generell Info, Logo & Farger</legend>
                         <div>
                             <label htmlFor="tagline" className={labelClass}>Slagord</label>
                             <input id="tagline" type="text" value={localContent.tagline} onChange={e => handleChange('tagline', e.target.value)} className={inputClass} />
@@ -381,53 +430,116 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         </div>
                     </fieldset>
                     
-                     {/* Section Order */}
-                    <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Seksjonsoppsett</legend>
-                        <p className="text-sm text-gray-400">Bruk knappene for å endre rekkefølgen på seksjonene på siden din. Du kan også skjule seksjoner eller deres titler.</p>
-                        <div className="space-y-2">
-                            {localContent.sectionOrder.map((section, index) => {
-                                if (section.type === 'home') return null; // Don't allow reordering of home
-                                return (
-                                    <div key={section.id} className="flex items-center justify-between bg-dark-3 p-3 rounded-lg flex-wrap gap-4">
-                                        <span className="font-bold text-white">{section.label}</span>
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`showTitle-${section.id}`}
-                                                    checked={section.showTitle}
-                                                    onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
-                                                    className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
-                                                />
-                                                <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`enabled-${section.id}`}
-                                                    checked={section.enabled}
-                                                    onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
-                                                    className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
-                                                />
-                                                <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
-                                            </div>
-                                            <div className="space-x-1">
-                                                <button onClick={() => handleSectionOrderChange(index, 'up')} disabled={index === 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Opp</button>
-                                                <button onClick={() => handleSectionOrderChange(index, 'down')} disabled={index === localContent.sectionOrder.length - 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Ned</button>
-                                            </div>
-                                        </div>
+                    {localContent.sectionOrder.map((section, index) => {
+                      if (section.type === 'home') return null;
+                      
+                      const getSectionContent = () => {
+                        switch(section.type) {
+                          case 'services':
+                            return (
+                                <>
+                                {localContent.services.map((service, idx) => (
+                                    <div key={service.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start bg-dark-3 p-4 rounded">
+                                        <p className="md:col-span-4 text-gray-400 font-bold">Tjeneste {idx + 1}</p>
+                                        <div><label className={labelClass}>Tittel</label><input type="text" value={service.title} onChange={e => handleItemChange('services', service.id, 'title', e.target.value)} className={inputClass} /></div>
+                                        <div className="md:col-span-2"><label className={labelClass}>Beskrivelse</label><textarea value={service.description} onChange={e => handleItemChange('services', service.id, 'description', e.target.value)} className={inputClass} rows={3}></textarea></div>
+                                        <div><label className={labelClass}>SVG Sti-data</label><input type="text" value={service.icon} onChange={e => handleItemChange('services', service.id, 'icon', e.target.value)} className={inputClass} /><button onClick={() => handleDeleteItem('services', service.id)} className={`${dangerButtonClass} w-full mt-2`}>Slett</button></div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </fieldset>
+                                ))}
+                                <button onClick={() => handleAddItem('services')} className={buttonClass}>Legg til Tjeneste</button>
+                                </>
+                            );
+                          case 'testimonials':
+                             return (
+                                <>
+                                {localContent.testimonials.map((testimonial, idx) => (
+                                    <div key={testimonial.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start bg-dark-3 p-4 rounded">
+                                        <p className="md:col-span-3 text-gray-400 font-bold">Referanse {idx + 1}</p>
+                                        <div className="md:col-span-3"><label className={labelClass}>Sitat</label><textarea value={testimonial.quote} onChange={e => handleItemChange('testimonials', testimonial.id, 'quote', e.target.value)} className={inputClass} rows={3}></textarea></div>
+                                        <div><label className={labelClass}>Navn</label><input type="text" value={testimonial.name} onChange={e => handleItemChange('testimonials', testimonial.id, 'name', e.target.value)} className={inputClass} /></div>
+                                        <div><label className={labelClass}>Arrangement</label><input type="text" value={testimonial.event} onChange={e => handleItemChange('testimonials', testimonial.id, 'event', e.target.value)} className={inputClass} /></div>
+                                        <div className="self-end"><button onClick={() => handleDeleteItem('testimonials', testimonial.id)} className={`${dangerButtonClass} w-full`}>Slett</button></div>
+                                    </div>
+                                ))}
+                                <button onClick={() => handleAddItem('testimonials')} className={buttonClass}>Legg til Referanse</button>
+                                </>
+                             );
+                          case 'gallery':
+                             return (
+                                 <>
+                                {localContent.gallery.map((item, idx) => (
+                                    <div key={item.id} className="bg-dark-3 p-4 rounded space-y-4">
+                                       <div className="flex justify-between items-center">
+                                            <p className="text-gray-400 font-bold">Media {idx + 1}</p>
+                                            <button onClick={() => handleDeleteItem('gallery', item.id)} className={`${dangerButtonClass} text-xs`}>Slett</button>
+                                       </div>
+                                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                           <div>
+                                               <label className={labelClass}>Type</label>
+                                               <select value={item.type} onChange={e => handleItemChange('gallery', item.id, 'type', e.target.value)} className={inputClass}>
+                                                   <option value="image">Bilde</option>
+                                                   <option value="youtube">YouTube Video</option>
+                                               </select>
+                                           </div>
+                                           <div className="md:col-span-2">
+                                               <label className={labelClass}>{item.type === 'image' ? 'Bilde-URL' : 'YouTube Video-URL'}</label>
+                                               <input type="text" value={item.src} onChange={e => handleItemChange('gallery', item.id, 'src', e.target.value)} className={inputClass} placeholder="Lim inn URL..." />
+                                           </div>
+                                       </div>
+                                        <div>
+                                            <label className={labelClass}>Tittel (valgfritt)</label>
+                                            <input type="text" value={item.title} onChange={e => handleItemChange('gallery', item.id, 'title', e.target.value)} className={inputClass} />
+                                       </div>
+                                   </div>
+                                ))}
+                                <button onClick={() => handleAddItem('gallery')} className={buttonClass}>Legg til Media</button>
+                                </>
+                             );
+                          case 'booking':
+                              return <p className="text-gray-400">Denne seksjonen inneholder kontaktskjemaet. Du kan endre rekkefølgen og synligheten her.</p>;
+                          case 'custom':
+                              const customSectionData = localContent.customSections.find(cs => cs.id === section.customSectionId);
+                              if (!customSectionData) return null;
+                              return (
+                                <div className="bg-dark-3 p-4 rounded space-y-4">
+                                    <div>
+                                        <label className={labelClass}>Tittel</label>
+                                        <input type="text" value={customSectionData.title} onChange={e => handleCustomSectionTitleChange(customSectionData.id, e.target.value)} className={inputClass} />
+                                    </div>
+                                    <div>
+                                         <label className={labelClass}>Innhold (støtter enkel HTML)</label>
+                                         <textarea value={customSectionData.content} onChange={e => handleItemChange('customSections', customSectionData.id, 'content', e.target.value)} className={`${inputClass} h-32`} rows={6}></textarea>
+                                    </div>
+                                    <button onClick={() => handleDeleteItem('customSections', customSectionData.id)} className={`${dangerButtonClass} text-xs`}>Slett Denne Seksjonen</button>
+                                </div>
+                              );
+                          default:
+                            return null;
+                        }
+                      }
+                      
+                      const sectionLabel = section.type === 'custom' 
+                        ? localContent.customSections.find(cs => cs.id === section.customSectionId)?.title || section.label
+                        : section.label;
+
+                      return (
+                        <fieldset key={section.id} className={fieldsetClass}>
+                          <legend className="flex justify-between items-center w-full flex-wrap gap-2 mb-4 border-b border-dark-3 pb-4">
+                              <span className="text-2xl font-bold text-white">{sectionLabel}</span>
+                              <SectionControls section={section} index={index}/>
+                          </legend>
+                          {getSectionContent()}
+                        </fieldset>
+                      );
+                    })}
+
+                    <button onClick={() => setIsTemplateModalOpen(true)} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
 
                     {/* Backgrounds */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Seksjonsbakgrunner</legend>
+                        <legend className="text-2xl font-bold text-white px-2 mb-4">Seksjonsbakgrunner</legend>
                         {(Object.keys(localContent.backgrounds) as Array<keyof SectionBackgrounds>).map(section => (
-                            <div key={section} className="bg-dark-3 p-4 rounded">
+                            <div key={section} className="bg-dark-3 p-4 rounded mb-4">
                                 <h3 className="text-xl font-bold text-white capitalize mb-4">{section}</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
@@ -451,67 +563,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         ))}
                     </fieldset>
 
-                     {/* Media Gallery */}
-                    <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Mediegalleri</legend>
-                        {localContent.gallery.map((item, index) => (
-                            <div key={item.id} className="bg-dark-3 p-4 rounded space-y-4">
-                               <div className="flex justify-between items-center">
-                                    <p className="text-gray-400 font-bold">Media {index + 1}</p>
-                                    <button onClick={() => handleDeleteItem('gallery', item.id)} className={`${dangerButtonClass} text-xs`}>Slett</button>
-                               </div>
-                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                   <div>
-                                       <label className={labelClass}>Type</label>
-                                       <select value={item.type} onChange={e => handleItemChange('gallery', item.id, 'type', e.target.value)} className={inputClass}>
-                                           <option value="image">Bilde</option>
-                                           <option value="youtube">YouTube Video</option>
-                                       </select>
-                                   </div>
-                                   <div className="md:col-span-2">
-                                       <label className={labelClass}>{item.type === 'image' ? 'Bilde-URL' : 'YouTube Video-URL'}</label>
-                                       <input type="text" value={item.src} onChange={e => handleItemChange('gallery', item.id, 'src', e.target.value)} className={inputClass} placeholder="Lim inn URL..." />
-                                   </div>
-                               </div>
-                                <div>
-                                    <label className={labelClass}>Tittel (valgfritt)</label>
-                                    <input type="text" value={item.title} onChange={e => handleItemChange('gallery', item.id, 'title', e.target.value)} className={inputClass} />
-                               </div>
-                           </div>
-                        ))}
-                        <button onClick={() => handleAddItem('gallery')} className={buttonClass}>Legg til Media</button>
-                    </fieldset>
-                    
-                    {/* Custom Sections */}
-                    <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Egendefinerte Seksjoner</legend>
-                        {localContent.customSections.map((section, index) => (
-                             <div key={section.id} className="bg-dark-3 p-4 rounded space-y-4">
-                                <div className="flex justify-between items-center">
-                                     <p className="text-gray-400 font-bold">Egendefinert Seksjon {index + 1}</p>
-                                     <button onClick={() => handleDeleteItem('customSections', section.id)} className={`${dangerButtonClass} text-xs`}>Slett</button>
-                                </div>
-                                <div>
-                                    <label className={labelClass}>Tittel</label>
-                                    <input type="text" value={section.title} onChange={e => handleCustomSectionTitleChange(section.id, e.target.value)} className={inputClass} />
-                                </div>
-                                <div>
-                                     <label className={labelClass}>Innhold (støtter enkel HTML)</label>
-                                     <textarea value={section.content} onChange={e => handleItemChange('customSections', section.id, 'content', e.target.value)} className={`${inputClass} h-32`} rows={6}></textarea>
-                                </div>
-                            </div>
-                        ))}
-                        <button onClick={() => setIsTemplateModalOpen(true)} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
-                    </fieldset>
-
-                    {/* Social Links, Playlist, Services, Testimonials, Contact, Admin... */}
-                    {/* ... (rest of the existing fieldsets from before) ... */}
-
                      {/* Social Links */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Sosiale Lenker</legend>
+                        <legend className="text-2xl font-bold text-white px-2 mb-4">Sosiale Lenker</legend>
                         {localContent.socialLinks.map((link, index) => (
-                            <div key={link.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-dark-3 p-4 rounded">
+                            <div key={link.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-dark-3 p-4 rounded mb-4">
                                 <p className="md:col-span-4 text-gray-400 font-bold">Lenke {index + 1}</p>
                                 <div><label className={labelClass}>Navn</label><input type="text" value={link.name} onChange={e => handleItemChange('socialLinks', link.id, 'name', e.target.value)} className={inputClass} /></div>
                                 <div><label className={labelClass}>URL</label><input type="text" value={link.url} onChange={e => handleItemChange('socialLinks', link.id, 'url', e.target.value)} className={inputClass} /></div>
@@ -527,9 +583,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                     {/* Playlist */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Musikkspilleliste</legend>
+                        <legend className="text-2xl font-bold text-white px-2 mb-4">Musikkspilleliste</legend>
                         {localContent.playlist.map((track: Track, index) => (
-                            <div key={track.id} className="bg-dark-3 p-4 rounded space-y-4">
+                            <div key={track.id} className="bg-dark-3 p-4 rounded space-y-4 mb-4">
                                <p className="text-gray-400 font-bold">Spor {index + 1}</p>
                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                    <div>
@@ -554,40 +610,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         ))}
                         <button onClick={() => handleAddItem('playlist')} className={buttonClass}>Legg til Spor</button>
                     </fieldset>
-
-                    {/* Services */}
-                    <fieldset className={fieldsetClass}>
-                         <legend className="text-2xl font-bold text-white px-2">Tjenester</legend>
-                         {localContent.services.map((service, index) => (
-                             <div key={service.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start bg-dark-3 p-4 rounded">
-                                 <p className="md:col-span-4 text-gray-400 font-bold">Tjeneste {index + 1}</p>
-                                 <div><label className={labelClass}>Tittel</label><input type="text" value={service.title} onChange={e => handleItemChange('services', service.id, 'title', e.target.value)} className={inputClass} /></div>
-                                 <div className="md:col-span-2"><label className={labelClass}>Beskrivelse</label><textarea value={service.description} onChange={e => handleItemChange('services', service.id, 'description', e.target.value)} className={inputClass} rows={3}></textarea></div>
-                                 <div><label className={labelClass}>SVG Sti-data</label><input type="text" value={service.icon} onChange={e => handleItemChange('services', service.id, 'icon', e.target.value)} className={inputClass} /><button onClick={() => handleDeleteItem('services', service.id)} className={`${dangerButtonClass} w-full mt-2`}>Slett</button></div>
-                             </div>
-                         ))}
-                         <button onClick={() => handleAddItem('services')} className={buttonClass}>Legg til Tjeneste</button>
-                    </fieldset>
-
-
-                    {/* Testimonials */}
-                    <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Referanser</legend>
-                        {localContent.testimonials.map((testimonial, index) => (
-                            <div key={testimonial.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start bg-dark-3 p-4 rounded">
-                                <p className="md:col-span-3 text-gray-400 font-bold">Referanse {index + 1}</p>
-                                <div className="md:col-span-3"><label className={labelClass}>Sitat</label><textarea value={testimonial.quote} onChange={e => handleItemChange('testimonials', testimonial.id, 'quote', e.target.value)} className={inputClass} rows={3}></textarea></div>
-                                <div><label className={labelClass}>Navn</label><input type="text" value={testimonial.name} onChange={e => handleItemChange('testimonials', testimonial.id, 'name', e.target.value)} className={inputClass} /></div>
-                                <div><label className={labelClass}>Arrangement</label><input type="text" value={testimonial.event} onChange={e => handleItemChange('testimonials', testimonial.id, 'event', e.target.value)} className={inputClass} /></div>
-                                <div className="self-end"><button onClick={() => handleDeleteItem('testimonials', testimonial.id)} className={`${dangerButtonClass} w-full`}>Slett</button></div>
-                            </div>
-                        ))}
-                        <button onClick={() => handleAddItem('testimonials')} className={buttonClass}>Legg til Referanse</button>
-                    </fieldset>
-
+                    
                     {/* Contact Info */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Kontaktinfo</legend>
+                        <legend className="text-2xl font-bold text-white px-2 mb-4">Kontaktinfo</legend>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="email" className={labelClass}>Generell E-post</label>
@@ -607,7 +633,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                     {/* Admin Settings */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Admin-innstillinger</legend>
+                        <legend className="text-2xl font-bold text-white px-2 mb-4">Admin-innstillinger</legend>
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="currentPassword" className={labelClass}>Nåværende passord</label>

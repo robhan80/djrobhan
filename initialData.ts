@@ -84,7 +84,7 @@ export const initialData: AppContent = {
   },
   musicPlayerSectionId: 'home',
   sectionOrder: [
-    { id: 'home', type: 'home', label: 'Hjem', enabled: true, showTitle: true },
+    { id: 'home', type: 'home', label: 'Hjem', enabled: true, showTitle: false },
     { id: 'services', type: 'services', label: 'Tjenester', enabled: true, showTitle: true },
     { id: 'testimonials', type: 'testimonials', label: 'Referanser', enabled: true, showTitle: true },
     { id: 'gallery', type: 'gallery', label: 'Galleri', enabled: true, showTitle: true },
