@@ -1,6 +1,13 @@
 
 import React, { useState } from 'react';
 import { useContent } from '../hooks/useContent';
+import { SectionConfig } from '../types';
+import { MusicPlayer } from '../components/MusicPlayer';
+
+interface PageProps {
+  sectionConfig: SectionConfig;
+  showMusicPlayer: boolean;
+}
 
 const BookingForm: React.FC = () => {
   const { content } = useContent();
@@ -122,7 +129,7 @@ const BookingForm: React.FC = () => {
   );
 };
 
-export const BookingPage: React.FC = () => {
+export const BookingPage: React.FC<PageProps> = ({ sectionConfig, showMusicPlayer }) => {
   const { content } = useContent();
   const { contactInfo } = content;
   const bg = content.backgrounds.booking;
@@ -136,10 +143,17 @@ export const BookingPage: React.FC = () => {
     <section id="booking" className="py-20 relative bg-cover bg-center" style={bgStyle}>
        {bg.type === 'image' && <div className="absolute inset-0 bg-black/70 z-0"></div>}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-black text-white">La Oss Ta Kontakt</h2>
-          <p className="text-lg text-gray-400 mt-2">Klar for å gjøre arrangementet ditt uforglemmelig? Fyll ut skjemaet nedenfor.</p>
-        </div>
+        {sectionConfig.showTitle && (
+            <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black text-white">La Oss Ta Kontakt</h2>
+            <p className="text-lg text-gray-400 mt-2">Klar for å gjøre arrangementet ditt uforglemmelig? Fyll ut skjemaet nedenfor.</p>
+            </div>
+        )}
+        {showMusicPlayer && (
+            <div className="mb-12">
+                <MusicPlayer />
+            </div>
+        )}
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-start">
             <div className="bg-dark-2 p-8 rounded-lg border border-dark-3">
                 <BookingForm />

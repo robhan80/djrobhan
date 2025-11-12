@@ -70,6 +70,7 @@ export interface SectionConfig {
   type: SectionType;
   label: string; // Navigation label
   enabled: boolean;
+  showTitle: boolean; // Controls visibility of the section's main header
   customSectionId?: string; // Link to a specific custom section if type is 'custom'
 }
 
@@ -97,7 +98,7 @@ export interface AppContent {
   backgrounds: SectionBackgrounds;
   adminPassword: string;
   themeColors: ThemeColors;
-  // New customizable features
+  musicPlayerSectionId: string; // ID of the section to display the player in, or 'hidden'
   sectionOrder: SectionConfig[];
   gallery: MediaItem[];
   customSections: CustomSection[];

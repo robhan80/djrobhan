@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, SectionConfig } from './types';
+import { View, SectionConfig, CustomSection, AppContent } from './types';
 import { LandingPage } from './pages/LandingPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { TestimonialsPage } from './pages/TestimonialsPage';
@@ -16,12 +16,14 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
   const { content } = useContent();
 
   const navItems = content.sectionOrder
-    .filter(section => section.enabled && section.type !== 'home')
+    .filter(section => section.enabled)
     .map(section => ({ id: section.id, label: section.label }));
-
+    
+  // Separate booking link for special styling
   const bookingItem = navItems.find(item => item.id === 'booking');
-  const regularItems = navItems.filter(item => item.id !== 'booking');
+  const regularItems = navItems.filter(item => item.id !== 'booking' && item.id !== 'home');
   
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -172,24 +174,30 @@ const Footer: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
     );
 };
 
-const renderSection = (section: SectionConfig, allCustomSections: any[]) => {
-  switch(section.type) {
-    case 'home':
-      return <LandingPage key={section.id} />;
-    case 'services':
-      return <ServicesPage key={section.id} />;
-    case 'testimonials':
-      return <TestimonialsPage key={section.id} />;
-    case 'booking':
-      return <BookingPage key={section.id} />;
-    case 'gallery':
-      return <GalleryPage key={section.id} />;
-    case 'custom':
-      const customSectionData = allCustomSections.find(cs => cs.id === section.customSectionId);
-      return customSectionData ? <CustomSectionPage key={section.id} section={customSectionData} /> : null;
-    default:
-      return null;
-  }
+const renderSection = (section: SectionConfig, allCustomSections: CustomSection[], musicPlayerSectionId: string) => {
+    const props = {
+        key: section.id,
+        sectionConfig: section,
+        showMusicPlayer: musicPlayerSectionId === section.id
+    };
+
+    switch (section.type) {
+        case 'home':
+            return <LandingPage {...props} />;
+        case 'services':
+            return <ServicesPage {...props} />;
+        case 'testimonials':
+            return <TestimonialsPage {...props} />;
+        case 'booking':
+            return <BookingPage {...props} />;
+        case 'gallery':
+            return <GalleryPage {...props} />;
+        case 'custom':
+            const customSectionData = allCustomSections.find(cs => cs.id === section.customSectionId);
+            return customSectionData ? <CustomSectionPage {...props} customSectionData={customSectionData} /> : null;
+        default:
+            return null;
+    }
 }
 
 const AppContent: React.FC = () => {
@@ -243,7 +251,7 @@ const AppContent: React.FC = () => {
         <div className="animate-fade-in">
           {content.sectionOrder
             .filter(section => section.enabled)
-            .map(section => renderSection(section, content.customSections))
+            .map(section => renderSection(section, content.customSections, content.musicPlayerSectionId))
           }
         </div>
       </main>

@@ -1,7 +1,13 @@
 
 import React from 'react';
-import { Service } from '../types';
+import { Service, SectionConfig } from '../types';
 import { useContent } from '../hooks/useContent';
+import { MusicPlayer } from '../components/MusicPlayer';
+
+interface PageProps {
+  sectionConfig: SectionConfig;
+  showMusicPlayer: boolean;
+}
 
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
   <div className="bg-dark-2 p-6 rounded-lg border border-dark-3 transform hover:-translate-y-2 transition-transform duration-300 shadow-lg">
@@ -15,7 +21,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
   </div>
 );
 
-export const ServicesPage: React.FC = () => {
+export const ServicesPage: React.FC<PageProps> = ({ sectionConfig, showMusicPlayer }) => {
   const { content } = useContent();
   const bg = content.backgrounds.services;
   
@@ -28,10 +34,17 @@ export const ServicesPage: React.FC = () => {
     <section id="services" className="py-20 relative bg-cover bg-center" style={bgStyle}>
        {bg.type === 'image' && <div className="absolute inset-0 bg-black/70 z-0"></div>}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-black text-white">Hva Jeg Gjør</h2>
-          <p className="text-lg text-gray-400 mt-2">Skaper den perfekte stemningen for enhver anledning.</p>
-        </div>
+        {sectionConfig.showTitle && (
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black text-white">Hva Jeg Gjør</h2>
+            <p className="text-lg text-gray-400 mt-2">Skaper den perfekte stemningen for enhver anledning.</p>
+          </div>
+        )}
+        {showMusicPlayer && (
+            <div className="mb-12">
+                <MusicPlayer />
+            </div>
+        )}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {content.services.map((service) => (
             <ServiceCard key={service.id} service={service} />

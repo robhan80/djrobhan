@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -15,6 +14,95 @@ interface AdminPageProps {
   setView: (view: View) => void;
 }
 
+const templates = [
+    {
+        name: 'Tom Seksjon',
+        description: 'Start med blanke ark for full kreativ frihet.',
+        template: {
+            title: 'Ny Seksjon',
+            content: '<div class="prose prose-invert prose-lg max-w-none"><p>Start å skrive ditt innhold her...</p></div>'
+        }
+    },
+    {
+        name: 'Tekst med Bilde',
+        description: 'Perfekt for en "Om Meg"-seksjon, med bilde til venstre og tekst til høyre.',
+        template: {
+            title: 'Om Meg',
+            content: `<div class="md:flex md:items-center md:gap-8">
+  <div class="md:w-1/3 mb-4 md:mb-0">
+    <img src="https://images.unsplash.com/photo-1517230878791-4d28214057c2?q=80&w=1770&auto=format&fit=crop" alt="DJ på konsert" class="rounded-lg shadow-lg w-full">
+  </div>
+  <div class="md:w-2/3">
+    <h3 class="text-3xl font-bold mb-4 text-white">Min Historie</h3>
+    <p class="text-gray-300">Her kan du skrive en engasjerende tekst om deg selv, din bakgrunn som DJ, og hva som driver din lidenskap for musikk. Fortell om dine spesialiteter og hva som gjør dine arrangementer unike.</p>
+  </div>
+</div>`
+        }
+    },
+    {
+        name: 'SoMe Embed',
+        description: 'Vis din Instagram- eller TikTok-feed direkte på siden.',
+        template: {
+            title: 'Følg Meg På Sosiale Medier',
+            content: `<div class="bg-dark-3 p-6 rounded-lg text-center">
+  <p class="mb-4 text-gray-400">Her kan du lime inn "embed-koden" fra en Instagram- eller TikTok-post. Gå til posten du vil vise, klikk på de tre prikkene (...) og velg "Embed" eller "Bygg inn". Lim inn koden du får her.</p>
+  
+  <div class="flex justify-center">
+    <!-- Lim inn embed-koden din under denne linjen -->
+    <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/C_If5XqN3If/" data-instgrm-version="14" style=" background:#000; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"></div></blockquote><script async src="//www.instagram.com/embed.js"></script>
+  </div>
+</div>`
+        }
+    },
+    {
+        name: 'Arrangementsliste',
+        description: 'Annonser dine kommende spillejobber og arrangementer.',
+        template: {
+            title: 'Kommende Arrangementer',
+            content: `<ul class="space-y-4">
+  <li class="p-4 bg-dark-3 rounded-lg md:flex justify-between items-center space-y-2 md:space-y-0">
+    <div>
+      <p class="font-bold text-white text-xl">Event Navn 1</p>
+      <p class="text-sm text-gray-400">Dato: 01.01.2025 | Sted: Venue Name</p>
+    </div>
+    <a href="#booking" class="inline-block px-4 py-2 bg-[var(--color-primary)] text-white text-sm font-semibold rounded hover:bg-[var(--color-light)] transition-colors">Book Nå</a>
+  </li>
+  <li class="p-4 bg-dark-3 rounded-lg md:flex justify-between items-center space-y-2 md:space-y-0">
+    <div>
+      <p class="font-bold text-white text-xl">Event Navn 2</p>
+      <p class="text-sm text-gray-400">Dato: 15.01.2025 | Sted: Another Club</p>
+    </div>
+    <a href="#" target="_blank" class="inline-block px-4 py-2 bg-[var(--color-primary)] text-white text-sm font-semibold rounded hover:bg-[var(--color-light)] transition-colors">Kjøp Billetter</a>
+  </li>
+</ul>`
+        }
+    }
+];
+
+const TemplateModal: React.FC<{ isOpen: boolean; onClose: () => void; onSelect: (template: {title: string, content: string}) => void }> = ({ isOpen, onClose, onSelect }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-dark-2 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-dark-3">
+                <div className="p-6 flex justify-between items-center border-b border-dark-3 sticky top-0 bg-dark-2 z-10">
+                    <h3 className="text-2xl font-bold text-white">Velg en Mal for Ny Seksjon</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl">&times;</button>
+                </div>
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {templates.map(t => (
+                        <div key={t.name} className="bg-dark-3 p-6 rounded-lg border border-gray-700 hover:border-[var(--color-primary)] transition-all duration-300 transform hover:scale-105 cursor-pointer flex flex-col" onClick={() => onSelect(t.template)}>
+                            <h4 className="text-xl font-bold text-white mb-2">{t.name}</h4>
+                            <p className="text-gray-400 flex-grow mb-4">{t.description}</p>
+                            <span className={`${secondaryButtonClass} mt-auto w-full text-center`}>Velg Mal</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     const { content, setContent, resetContent } = useContent();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,6 +111,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [passwordFields, setPasswordFields] = useState({ current: '', newPass: '', confirmPass: '' });
     const [passwordMessage, setPasswordMessage] = useState({ text: '', type: 'info' as 'info' | 'success' | 'error' });
+    const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -68,53 +157,64 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     };
 
     const handleItemChange = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections', id: string, field: string, value: any) => {
-        const updatedItems = localContent[section].map((item: any) => 
-            item.id === id ? { ...item, [field]: value } : item
-        );
-        handleChange(section, updatedItems);
+        setLocalContent(prev => {
+            const updatedItems = prev[section].map((item: any) => 
+                item.id === id ? { ...item, [field]: value } : item
+            );
+            return {...prev, [section]: updatedItems };
+        });
     };
 
-    const handleAddItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections') => {
+    const handleAddItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery') => {
         const newItem: any = { id: crypto.randomUUID() };
         
-        if (section === 'customSections') {
-            newItem.title = 'Ny Egendefinert Seksjon';
-            newItem.content = 'Legg til innhold her...';
-            
-            const newSectionConfig: SectionConfig = {
-              id: `custom-${newItem.id}`,
-              type: 'custom',
-              label: newItem.title,
-              enabled: true,
-              customSectionId: newItem.id,
-            };
-            setLocalContent(prev => ({
-                ...prev,
-                customSections: [...prev.customSections, newItem],
-                sectionOrder: [...prev.sectionOrder, newSectionConfig]
-            }));
-            return;
-        } else if (section === 'gallery') {
+        if (section === 'gallery') {
             newItem.type = 'image';
             newItem.src = '';
             newItem.title = '';
-        } else {
-           newItem.title = '';
         }
 
         handleChange(section, [...localContent[section], newItem]);
     };
 
     const handleDeleteItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections', id: string) => {
-        if(window.confirm('Er du sikker på at du vil slette dette elementet?')) {
-            const updatedItems = localContent[section].filter((item: any) => item.id !== id);
-            handleChange(section, updatedItems);
-
-            if (section === 'customSections') {
-                const updatedOrder = localContent.sectionOrder.filter(s => s.customSectionId !== id);
-                handleChange('sectionOrder', updatedOrder);
-            }
+        if (window.confirm('Er du sikker på at du vil slette dette elementet?')) {
+            setLocalContent(prev => {
+                const updatedItems = prev[section].filter((item: any) => item.id !== id);
+                
+                if (section === 'customSections') {
+                    const updatedOrder = prev.sectionOrder.filter(s => s.customSectionId !== id);
+                    return { ...prev, customSections: updatedItems as CustomSection[], sectionOrder: updatedOrder };
+                }
+                
+                return { ...prev, [section]: updatedItems };
+            });
         }
+    };
+    
+    const handleAddCustomSectionFromTemplate = (template: {title: string, content: string}) => {
+        const newItem: CustomSection = {
+            id: crypto.randomUUID(),
+            title: template.title,
+            content: template.content,
+        };
+
+        const newSectionConfig: SectionConfig = {
+            id: `custom-${newItem.id}`,
+            type: 'custom',
+            label: newItem.title,
+            enabled: true,
+            showTitle: true,
+            customSectionId: newItem.id,
+        };
+
+        setLocalContent(prev => ({
+            ...prev,
+            customSections: [...prev.customSections, newItem],
+            sectionOrder: [...prev.sectionOrder, newSectionConfig]
+        }));
+        
+        setIsTemplateModalOpen(false);
     };
 
     const handleBgChange = (section: keyof SectionBackgrounds, field: keyof BackgroundSettings, value: string) => {
@@ -162,8 +262,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
         }
     }
     
-    const handleSectionToggle = (id: string, enabled: boolean) => {
-        const newOrder = localContent.sectionOrder.map(s => s.id === id ? {...s, enabled} : s);
+    const handleSectionConfigChange = (id: string, key: 'enabled' | 'showTitle', value: boolean) => {
+        const newOrder = localContent.sectionOrder.map(s => s.id === id ? {...s, [key]: value} : s);
         handleChange('sectionOrder', newOrder);
     }
     
@@ -200,6 +300,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
     return (
         <div className="py-20 bg-dark-1">
+            <TemplateModal isOpen={isTemplateModalOpen} onClose={() => setIsTemplateModalOpen(false)} onSelect={handleAddCustomSectionFromTemplate} />
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-12 flex-wrap gap-4">
                     <h2 className="text-4xl md:text-5xl font-black text-white">Innholdsadministrasjon</h2>
@@ -264,25 +365,49 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </div>
                             </div>
                         </div>
+                        <div className="pt-4 mt-4 border-t border-dark-3">
+                            <label htmlFor="musicPlayerSectionId" className={labelClass}>Plassering av Musikkspiller</label>
+                            <select
+                                id="musicPlayerSectionId"
+                                value={localContent.musicPlayerSectionId}
+                                onChange={e => handleChange('musicPlayerSectionId', e.target.value)}
+                                className={inputClass}
+                            >
+                                <option value="hidden">Skjult</option>
+                                {localContent.sectionOrder.map(s => (
+                                    <option key={s.id} value={s.id}>{s.label}</option>
+                                ))}
+                            </select>
+                        </div>
                     </fieldset>
                     
                      {/* Section Order */}
                     <fieldset className={fieldsetClass}>
                         <legend className="text-2xl font-bold text-white px-2">Seksjonsoppsett</legend>
-                        <p className="text-sm text-gray-400">Dra og slipp (fremtidig) eller bruk knappene for å endre rekkefølgen på seksjonene på siden din. Du kan også skjule seksjoner du ikke vil vise.</p>
+                        <p className="text-sm text-gray-400">Bruk knappene for å endre rekkefølgen på seksjonene på siden din. Du kan også skjule seksjoner eller deres titler.</p>
                         <div className="space-y-2">
                             {localContent.sectionOrder.map((section, index) => {
                                 if (section.type === 'home') return null; // Don't allow reordering of home
                                 return (
-                                    <div key={section.id} className="flex items-center justify-between bg-dark-3 p-3 rounded">
+                                    <div key={section.id} className="flex items-center justify-between bg-dark-3 p-3 rounded-lg flex-wrap gap-4">
                                         <span className="font-bold text-white">{section.label}</span>
                                         <div className="flex items-center gap-4">
                                             <div className="flex items-center gap-2">
                                                 <input
                                                     type="checkbox"
+                                                    id={`showTitle-${section.id}`}
+                                                    checked={section.showTitle}
+                                                    onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
+                                                    className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                                                />
+                                                <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
                                                     id={`enabled-${section.id}`}
                                                     checked={section.enabled}
-                                                    onChange={e => handleSectionToggle(section.id, e.target.checked)}
+                                                    onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
                                                     className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
                                                 />
                                                 <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
@@ -376,7 +501,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </div>
                             </div>
                         ))}
-                        <button onClick={() => handleAddItem('customSections')} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
+                        <button onClick={() => setIsTemplateModalOpen(true)} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
                     </fieldset>
 
                     {/* Social Links, Playlist, Services, Testimonials, Contact, Admin... */}

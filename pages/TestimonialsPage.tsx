@@ -1,7 +1,13 @@
 
 import React from 'react';
-import { Testimonial } from '../types';
+import { Testimonial, SectionConfig } from '../types';
 import { useContent } from '../hooks/useContent';
+import { MusicPlayer } from '../components/MusicPlayer';
+
+interface PageProps {
+  sectionConfig: SectionConfig;
+  showMusicPlayer: boolean;
+}
 
 const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => (
   <div className="bg-dark-2 p-8 rounded-lg border border-dark-3 shadow-lg flex flex-col h-full">
@@ -18,7 +24,7 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }
   </div>
 );
 
-export const TestimonialsPage: React.FC = () => {
+export const TestimonialsPage: React.FC<PageProps> = ({ sectionConfig, showMusicPlayer }) => {
   const { content } = useContent();
   const bg = content.backgrounds.testimonials;
 
@@ -31,10 +37,17 @@ export const TestimonialsPage: React.FC = () => {
     <section id="testimonials" className="py-20 relative bg-cover bg-center" style={bgStyle}>
       {bg.type === 'image' && <div className="absolute inset-0 bg-black/70 z-0"></div>}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-black text-white">Kundeomtaler</h2>
-          <p className="text-lg text-gray-400 mt-2">Ikke bare ta mitt ord for det.</p>
-        </div>
+        {sectionConfig.showTitle && (
+            <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black text-white">Kundeomtaler</h2>
+            <p className="text-lg text-gray-400 mt-2">Ikke bare ta mitt ord for det.</p>
+            </div>
+        )}
+        {showMusicPlayer && (
+            <div className="mb-12">
+                <MusicPlayer />
+            </div>
+        )}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {content.testimonials.map((testimonial) => (
             <TestimonialCard key={testimonial.id} testimonial={testimonial} />
