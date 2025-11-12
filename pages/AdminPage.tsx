@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo } from '../types';
@@ -10,8 +9,6 @@ const fieldsetClass = "bg-dark-2 p-6 rounded-lg border border-dark-3 space-y-4";
 const buttonClass = "px-4 py-2 bg-brand-purple text-white font-semibold rounded-lg hover:bg-brand-purple-light transition-colors";
 const dangerButtonClass = "px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors";
 
-const ADMIN_PASSWORD = "admin"; // Simple password for demo purposes
-
 interface AdminPageProps {
   setView: (view: View) => void;
 }
@@ -22,6 +19,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     const [password, setPassword] = useState('');
     const [localContent, setLocalContent] = useState<AppContent>(content);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [passwordFields, setPasswordFields] = useState({ current: '', newPass: '', confirmPass: '' });
+    const [passwordMessage, setPasswordMessage] = useState({ text: '', type: 'info' as 'info' | 'success' | 'error' });
+
 
     useEffect(() => {
         setLocalContent(content);
@@ -29,7 +29,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === ADMIN_PASSWORD) {
+        if (password === content.adminPassword) {
             setIsAuthenticated(true);
         } else {
             alert('Feil passord');
@@ -45,6 +45,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     const handleChange = (section: keyof AppContent, value: any) => {
         setLocalContent(prev => ({...prev, [section]: value}));
     }
+    
+    const handlePasswordChange = () => {
+        if (passwordFields.current !== localContent.adminPassword) {
+            setPasswordMessage({ text: 'Nåværende passord er feil.', type: 'error' });
+            return;
+        }
+        if (!passwordFields.newPass || passwordFields.newPass.length < 4) {
+            setPasswordMessage({ text: 'Nytt passord må være på minst 4 tegn.', type: 'error' });
+            return;
+        }
+        if (passwordFields.newPass !== passwordFields.confirmPass) {
+            setPasswordMessage({ text: 'De nye passordene stemmer ikke overens.', type: 'error' });
+            return;
+        }
+
+        setLocalContent(prev => ({...prev, adminPassword: passwordFields.newPass }));
+        setPasswordMessage({ text: 'Passordet er oppdatert. Trykk "Lagre Alle Endringer" for å bekrefte.', type: 'success' });
+        setPasswordFields({ current: '', newPass: '', confirmPass: '' });
+    };
 
     const handleItemChange = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services', id: string, field: string, value: string) => {
         const updatedItems = localContent[section].map((item: any) => 
@@ -220,7 +239,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 <p className="md:col-span-4 text-gray-400 font-bold">Lenke {index + 1}</p>
                                 <div><label className={labelClass}>Navn</label><input type="text" value={link.name} onChange={e => handleItemChange('socialLinks', link.id, 'name', e.target.value)} className={inputClass} /></div>
                                 <div><label className={labelClass}>URL</label><input type="text" value={link.url} onChange={e => handleItemChange('socialLinks', link.id, 'url', e.target.value)} className={inputClass} /></div>
-                                <div className="md:col-span-1"><label className={labelClass}>SVG Ikon HTML</label><input type="text" value={link.icon} onChange={e => handleItemChange('socialLinks', link.id, 'icon', e.target.value)} className={inputClass} /></div>
+                                <div className="md:col-span-1 self-start">
+                                    <label className={labelClass}>Ikon (URL / SVG-kode)</label>
+                                    <textarea 
+                                        value={link.icon} 
+                                        onChange={e => handleItemChange('socialLinks', link.id, 'icon', e.target.value)} 
+                                        className={`${inputClass} h-24 font-mono text-xs`} 
+                                        placeholder="Lim inn URL til .svg-fil, eller selve <svg>...</svg> koden."
+                                    />
+                                </div>
                                 <div><button onClick={() => handleDeleteItem('socialLinks', link.id)} className={`${dangerButtonClass} w-full`}>Slett</button></div>
                             </div>
                         ))}
@@ -298,16 +325,47 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         <legend className="text-2xl font-bold text-white px-2">Kontaktinfo</legend>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="email" className={labelClass}>E-post</label>
+                                <label htmlFor="email" className={labelClass}>Generell E-post</label>
                                 <input id="email" type="email" value={localContent.contactInfo.email} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, email: e.target.value})} className={inputClass} />
                             </div>
-                            <div>
+                             <div>
                                 <label htmlFor="phone" className={labelClass}>Telefon</label>
                                 <input id="phone" type="text" value={localContent.contactInfo.phone} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, phone: e.target.value})} className={inputClass} />
                             </div>
                         </div>
+                         <div className="pt-4 mt-4 border-t border-dark-3">
+                            <label htmlFor="bookingRecipientEmail" className={labelClass}>E-post for Bookinger</label>
+                             <p className="text-xs text-gray-400 mb-2">Dette er e-postadressen som booking-forespørsler fra kontaktskjemaet vil bli sendt til.</p>
+                            <input id="bookingRecipientEmail" type="email" value={localContent.contactInfo.bookingRecipientEmail} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, bookingRecipientEmail: e.target.value})} className={inputClass} />
+                        </div>
                     </fieldset>
 
+                    {/* Admin Settings */}
+                    <fieldset className={fieldsetClass}>
+                        <legend className="text-2xl font-bold text-white px-2">Admin-innstillinger</legend>
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="currentPassword" className={labelClass}>Nåværende passord</label>
+                                <input id="currentPassword" type="password" value={passwordFields.current} onChange={(e) => setPasswordFields(p => ({...p, current: e.target.value}))} className={inputClass} />
+                            </div>
+                             <div>
+                                <label htmlFor="newPassword" className={labelClass}>Nytt passord</label>
+                                <input id="newPassword" type="password" value={passwordFields.newPass} onChange={(e) => setPasswordFields(p => ({...p, newPass: e.target.value}))} className={inputClass} />
+                            </div>
+                             <div>
+                                <label htmlFor="confirmPassword" className={labelClass}>Bekreft nytt passord</label>
+                                <input id="confirmPassword" type="password" value={passwordFields.confirmPass} onChange={(e) => setPasswordFields(p => ({...p, confirmPass: e.target.value}))} className={inputClass} />
+                            </div>
+                            <button type="button" onClick={handlePasswordChange} className={buttonClass}>
+                                Oppdater passord
+                            </button>
+                            {passwordMessage.text && (
+                                <p className={`text-sm mt-2 ${passwordMessage.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+                                    {passwordMessage.text}
+                                </p>
+                            )}
+                        </div>
+                    </fieldset>
                 </div>
             </div>
         </div>

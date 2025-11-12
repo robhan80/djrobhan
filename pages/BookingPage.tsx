@@ -3,7 +3,17 @@ import React, { useState } from 'react';
 import { useContent } from '../hooks/useContent';
 
 const BookingForm: React.FC = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', eventType: '', eventDate: '', message: '' });
+  const { content } = useContent();
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    eventType: '',
+    eventDate: '',
+    soundAndLight: '',
+    budget: '',
+    message: ''
+  });
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -13,16 +23,37 @@ const BookingForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    
+    const recipient = content.contactInfo.bookingRecipientEmail;
+    const subject = `Ny bookingforespørsel: ${formData.eventType} - ${formData.name}`;
+    const body = `
+      Ny bookingforespørsel fra nettsiden:
+      ---------------------------------
+      Navn: ${formData.name}
+      Telefon: ${formData.phone}
+      E-post: ${formData.email}
+      
+      Type Arrangement: ${formData.eventType}
+      Dato for Arrangement: ${formData.eventDate}
+
+      Lyd og lys: ${formData.soundAndLight}
+      Budsjett: ${formData.budget || 'Ikke spesifisert'}
+      ---------------------------------
+      Ytterligere Detaljer:
+      ${formData.message}
+    `;
+
+    const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body.trim())}`;
+    
+    window.location.href = mailtoLink;
     setSubmitted(true);
-    // Here you would typically send the data to a server
   };
 
   if (submitted) {
     return (
       <div className="text-center p-8 bg-dark-3 rounded-lg">
         <h3 className="text-2xl font-bold text-white mb-2">Takk!</h3>
-        <p className="text-gray-300">Din forespørsel er sendt. Jeg kommer tilbake til deg snart.</p>
+        <p className="text-gray-300">Forespørselen din er klargjort. Vennligst fullfør og send den fra ditt e-postprogram for å fullføre bookingen.</p>
         <button onClick={() => setSubmitted(false)} className="mt-6 px-6 py-2 bg-brand-purple text-white font-semibold rounded-lg hover:bg-brand-purple-light transition-colors">
           Send en ny forespørsel
         </button>
@@ -38,25 +69,44 @@ const BookingForm: React.FC = () => {
           <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
         </div>
         <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">Telefonnummer</label>
+          <input type="tel" name="phone" id="phone" required value={formData.phone} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+        </div>
+      </div>
+       <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">E-postadresse</label>
           <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
         </div>
-      </div>
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="eventType" className="block text-sm font-medium text-gray-300 mb-1">Type Arrangement</label>
           <select name="eventType" id="eventType" required value={formData.eventType} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple">
             <option value="">Velg en arrangementstype</option>
-            <option>Klubbkveld</option>
+            <option>Firmaevent</option>
             <option>Bryllup</option>
-            <option>Firmaarrangement</option>
             <option>Privatfest</option>
+            <option>Utested</option>
             <option>Annet</option>
           </select>
         </div>
         <div>
           <label htmlFor="eventDate" className="block text-sm font-medium text-gray-300 mb-1">Dato for Arrangement</label>
           <input type="date" name="eventDate" id="eventDate" required value={formData.eventDate} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+        </div>
+      </div>
+       <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="soundAndLight" className="block text-sm font-medium text-gray-300 mb-1">Lyd og lys?</label>
+          <select name="soundAndLight" id="soundAndLight" required value={formData.soundAndLight} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple">
+            <option value="">Velg et alternativ</option>
+            <option>Full pakke</option>
+            <option>Kun lyd</option>
+            <option>Nei</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="budget" className="block text-sm font-medium text-gray-300 mb-1">Budsjett</label>
+          <input type="text" name="budget" id="budget" value={formData.budget} onChange={handleChange} placeholder="Valgfritt" className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
         </div>
       </div>
       <div>

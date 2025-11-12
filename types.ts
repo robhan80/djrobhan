@@ -36,6 +36,7 @@ export interface Testimonial {
 export interface ContactInfo {
   email: string;
   phone: string;
+  bookingRecipientEmail: string;
 }
 
 export interface BackgroundSettings {
@@ -65,4 +66,5 @@ export interface AppContent {
   testimonials: Testimonial[];
   contactInfo: ContactInfo;
   backgrounds: SectionBackgrounds;
+  adminPassword: string;
 }

@@ -89,7 +89,13 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
                   {content.socialLinks.map(link => (
                       <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-brand-purple transition-colors duration-300">
                           <span className="sr-only">{link.name}</span>
-                          <div className="w-6 h-6 lg:w-7 lg:h-7" dangerouslySetInnerHTML={{ __html: link.icon }} />
+                          <div className="w-6 h-6 lg:w-7 lg:h-7">
+                              {link.icon.trim().startsWith('<svg') ? (
+                                  <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: link.icon }} />
+                              ) : (
+                                  <img src={link.icon} alt={link.name} className="w-full h-full object-contain" />
+                              )}
+                          </div>
                       </a>
                   ))}
               </div>
@@ -114,7 +120,13 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
                 {content.socialLinks.map(link => (
                 <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-brand-purple transition-colors duration-300">
                     <span className="sr-only">{link.name}</span>
-                    <div className="w-7 h-7" dangerouslySetInnerHTML={{ __html: link.icon }} />
+                    <div className="w-7 h-7">
+                        {link.icon.trim().startsWith('<svg') ? (
+                            <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: link.icon }} />
+                        ) : (
+                            <img src={link.icon} alt={link.name} className="w-full h-full object-contain" />
+                        )}
+                    </div>
                 </a>
                 ))}
             </div>
@@ -134,7 +146,13 @@ const Footer: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
                 {content.socialLinks.map(link => (
                 <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-brand-purple transition-colors duration-300">
                     <span className="sr-only">{link.name}</span>
-                    <div className="w-6 h-6" dangerouslySetInnerHTML={{ __html: link.icon }} />
+                    <div className="w-6 h-6">
+                        {link.icon.trim().startsWith('<svg') ? (
+                            <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: link.icon }} />
+                        ) : (
+                            <img src={link.icon} alt={link.name} className="w-full h-full object-contain" />
+                        )}
+                    </div>
                 </a>
                 ))}
             </div>
