@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -165,8 +166,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
         });
     };
 
-    // FIX: Corrected property access from `localContent.section[section]` to `localContent[section]`.
-    // Also, added default values for newly created items to prevent uncontrolled component errors in React.
     const handleAddItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery') => {
         const newItem: any = { id: crypto.randomUUID() };
 
@@ -625,9 +624,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                             </div>
                         </div>
                          <div className="pt-4 mt-4 border-t border-dark-3">
-                            <label htmlFor="bookingRecipientEmail" className={labelClass}>E-post for Bookinger</label>
-                             <p className="text-xs text-gray-400 mb-2">Dette er e-postadressen som booking-forespørsler fra kontaktskjemaet vil bli sendt til.</p>
+                            <label htmlFor="bookingRecipientEmail" className={labelClass}>E-post for Bookinger (Reserve)</label>
+                             <p className="text-xs text-gray-400 mb-2">Brukes kun dersom "Form Submission URL" ikke er satt.</p>
                             <input id="bookingRecipientEmail" type="email" value={localContent.contactInfo.bookingRecipientEmail} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, bookingRecipientEmail: e.target.value})} className={inputClass} />
+                        </div>
+                        <div className="pt-4 mt-4 border-t border-dark-3">
+                            <label htmlFor="formspreeEndpoint" className={labelClass}>Form Submission URL (f.eks. Formspree)</label>
+                            <p className="text-xs text-gray-400 mb-2">For at kontaktskjemaet skal sende e-post direkte, lim inn din unike URL fra en tjeneste som Formspree her.</p>
+                            <input id="formspreeEndpoint" type="text" value={localContent.contactInfo.formspreeEndpoint} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, formspreeEndpoint: e.target.value})} className={inputClass} placeholder="https://formspree.io/f/din_unike_id" />
                         </div>
                     </fieldset>
 

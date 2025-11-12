@@ -37,6 +37,7 @@ export interface ContactInfo {
   email: string;
   phone: string;
   bookingRecipientEmail: string;
+  formspreeEndpoint: string;
 }
 
 export interface BackgroundSettings {

@@ -69,6 +69,7 @@ export const initialData: AppContent = {
     email: "dj@robhan.net",
     phone: "99111194",
     bookingRecipientEmail: "dj@robhan.net",
+    formspreeEndpoint: "",
   },
   backgrounds: {
     home: { type: 'image', value: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1920&auto=format&fit=crop" },

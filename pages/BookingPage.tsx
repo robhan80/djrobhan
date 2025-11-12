@@ -11,7 +11,7 @@ interface PageProps {
 
 const BookingForm: React.FC = () => {
   const { content } = useContent();
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     name: '',
     phone: '',
     email: '',
@@ -20,53 +20,72 @@ const BookingForm: React.FC = () => {
     soundAndLight: '',
     budget: '',
     message: ''
-  });
-  const [submitted, setSubmitted] = useState(false);
+  };
+  const [formData, setFormData] = useState(initialFormState);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    const recipient = content.contactInfo.bookingRecipientEmail;
-    const subject = `Ny bookingforespørsel: ${formData.eventType} - ${formData.name}`;
-    const body = `
-      Ny bookingforespørsel fra nettsiden:
-      ---------------------------------
-      Navn: ${formData.name}
-      Telefon: ${formData.phone}
-      E-post: ${formData.email}
-      
-      Type Arrangement: ${formData.eventType}
-      Dato for Arrangement: ${formData.eventDate}
+    const endpoint = content.contactInfo.formspreeEndpoint;
 
-      Lyd og lys: ${formData.soundAndLight}
-      Budsjett: ${formData.budget || 'Ikke spesifisert'}
-      ---------------------------------
-      Ytterligere Detaljer:
-      ${formData.message}
-    `;
+    if (!endpoint) {
+      alert("Kontaktskjema er ikke konfigurert. Vennligst kontakt administrator.");
+      return;
+    }
 
-    const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body.trim())}`;
-    
-    window.location.href = mailtoLink;
-    setSubmitted(true);
+    setStatus('sending');
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData(initialFormState);
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setStatus('error');
+    }
   };
 
-  if (submitted) {
+  if (status === 'success') {
     return (
       <div className="text-center p-8 bg-dark-3 rounded-lg">
-        <h3 className="text-2xl font-bold text-white mb-2">Takk!</h3>
-        <p className="text-gray-300">Forespørselen din er klargjort. Vennligst fullfør og send den fra ditt e-postprogram for å fullføre bookingen.</p>
-        <button onClick={() => setSubmitted(false)} className="mt-6 px-6 py-2 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-[var(--color-light)] transition-colors">
+        <h3 className="text-2xl font-bold text-white mb-2">Takk for din henvendelse!</h3>
+        <p className="text-gray-300">Jeg har mottatt din forespørsel og vil kontakte deg snarlig.</p>
+        <button onClick={() => setStatus('idle')} className="mt-6 px-6 py-2 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-[var(--color-light)] transition-colors">
           Send en ny forespørsel
         </button>
       </div>
     );
   }
+  
+  if (status === 'error') {
+     return (
+      <div className="text-center p-8 bg-dark-3 rounded-lg">
+        <h3 className="text-2xl font-bold text-red-500 mb-2">Noe gikk galt!</h3>
+        <p className="text-gray-300">Kunne ikke sende forespørselen. Vennligst prøv igjen senere, eller kontakt meg direkte via e-post eller telefon.</p>
+        <button onClick={() => setStatus('idle')} className="mt-6 px-6 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors">
+          Prøv igjen
+        </button>
+      </div>
+    );
+  }
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -121,8 +140,8 @@ const BookingForm: React.FC = () => {
         <textarea name="message" id="message" rows={5} value={formData.message} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"></textarea>
       </div>
       <div>
-        <button type="submit" className="w-full px-8 py-4 bg-[var(--color-primary)] text-white font-bold text-lg rounded-lg shadow-lg hover:bg-[var(--color-light)] transition-all duration-300 transform hover:scale-105">
-          Send Forespørsel
+        <button type="submit" disabled={status === 'sending'} className="w-full px-8 py-4 bg-[var(--color-primary)] text-white font-bold text-lg rounded-lg shadow-lg hover:bg-[var(--color-light)] transition-all duration-300 transform hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
+          {status === 'sending' ? 'Sender...' : 'Send Forespørsel'}
         </button>
       </div>
     </form>
