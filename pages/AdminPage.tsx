@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -363,7 +362,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                 <div className="space-y-10">
                     {/* General Info, Logo & Theme */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2 mb-4">Generell Info, Logo & Farger</legend>
+                        <div className="text-2xl font-bold text-white px-2 mb-4">Generell Info, Logo & Farger</div>
                         <div>
                             <label htmlFor="tagline" className={labelClass}>Slagord</label>
                             <input id="tagline" type="text" value={localContent.tagline} onChange={e => handleChange('tagline', e.target.value)} className={inputClass} />
@@ -523,10 +522,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                       return (
                         <fieldset key={section.id} className={fieldsetClass}>
-                          <legend className="flex justify-between items-center w-full flex-wrap gap-2 mb-4 border-b border-dark-3 pb-4">
+                          <div className="flex justify-between items-center w-full flex-wrap gap-2 mb-4 border-b border-dark-3 pb-4">
                               <span className="text-2xl font-bold text-white">{sectionLabel}</span>
                               <SectionControls section={section} index={index}/>
-                          </legend>
+                          </div>
                           {getSectionContent()}
                         </fieldset>
                       );
@@ -536,7 +535,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                     {/* Backgrounds */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2 mb-4">Seksjonsbakgrunner</legend>
+                        <div className="text-2xl font-bold text-white px-2 mb-4">Seksjonsbakgrunner</div>
                         {(Object.keys(localContent.backgrounds) as Array<keyof SectionBackgrounds>).map(section => (
                             <div key={section} className="bg-dark-3 p-4 rounded mb-4">
                                 <h3 className="text-xl font-bold text-white capitalize mb-4">{section}</h3>
@@ -564,7 +563,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                      {/* Social Links */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2 mb-4">Sosiale Lenker</legend>
+                        <div className="text-2xl font-bold text-white px-2 mb-4">Sosiale Lenker</div>
                         {localContent.socialLinks.map((link, index) => (
                             <div key={link.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-dark-3 p-4 rounded mb-4">
                                 <p className="md:col-span-4 text-gray-400 font-bold">Lenke {index + 1}</p>
@@ -582,7 +581,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                     {/* Playlist */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2 mb-4">Musikkspilleliste</legend>
+                        <div className="text-2xl font-bold text-white px-2 mb-4">Musikkspilleliste</div>
                         {localContent.playlist.map((track: Track, index) => (
                             <div key={track.id} className="bg-dark-3 p-4 rounded space-y-4 mb-4">
                                <p className="text-gray-400 font-bold">Spor {index + 1}</p>
@@ -612,7 +611,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                     
                     {/* Contact Info */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2 mb-4">Kontaktinfo</legend>
+                        <div className="text-2xl font-bold text-white px-2 mb-4">Kontaktinfo</div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="email" className={labelClass}>Generell E-post</label>
@@ -637,7 +636,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                     {/* Admin Settings */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2 mb-4">Admin-innstillinger</legend>
+                        <div className="text-2xl font-bold text-white px-2 mb-4">Admin-innstillinger</div>
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="currentPassword" className={labelClass}>Nåværende passord</label>
