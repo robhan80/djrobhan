@@ -1,0 +1,58 @@
+# Enkel workflow for å bygge og publisere et Vite-prosjekt til GitHub Pages
+name: Deploy Vite Project to Pages
+
+on:
+  # Kjører når du pusher kode til "main"-branchen
+  push:
+    branches: [ "main" ]
+  # Lar deg kjøre denne manuelt fra "Actions"-fanen
+  workflow_dispatch:
+
+# Tillatelser for å la GitHub Actions publisere på dine vegne
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# En jobb som heter "deploy"
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Laster ned koden din
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Setter opp Node.js (som Vite/React trenger)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # Bruker Node.js versjon 18, kan endres om nødvendig
+
+      # 3. Installerer alle "pakkene" prosjektet ditt er avhengig av
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Bygger nettsiden (dette er "bakingen" som Vite gjør)
+      # Denne lager en ny mappe som heter "dist"
+      - name: Build
+        run: npm run build
+
+      # 5. Forbereder den "bygde" mappen for publisering
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 6. Laster opp den ferdige "dist"-mappen
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Laster opp "dist"-mappen
+          path: './dist'
+          
+      # 7. Publisering!
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
