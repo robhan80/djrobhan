@@ -1,13 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
-import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo } from '../types';
+import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
 
 // Admin page styling
-const inputClass = "w-full bg-dark-3 border border-gray-600 rounded-lg p-2 text-white focus:ring-brand-purple focus:border-brand-purple";
+const inputClass = "w-full bg-dark-3 border border-gray-600 rounded-lg p-2 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]";
 const labelClass = "block text-sm font-medium text-gray-300 mb-1";
 const fieldsetClass = "bg-dark-2 p-6 rounded-lg border border-dark-3 space-y-4";
-const buttonClass = "px-4 py-2 bg-brand-purple text-white font-semibold rounded-lg hover:bg-brand-purple-light transition-colors";
+const buttonClass = "px-4 py-2 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-[var(--color-light)] transition-colors";
 const dangerButtonClass = "px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors";
+const secondaryButtonClass = "px-3 py-1 bg-dark-3 text-sm text-light-2 font-semibold rounded-lg hover:bg-gray-600 transition-colors";
 
 interface AdminPageProps {
   setView: (view: View) => void;
@@ -65,30 +67,53 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
         setPasswordFields({ current: '', newPass: '', confirmPass: '' });
     };
 
-    const handleItemChange = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services', id: string, field: string, value: string) => {
+    const handleItemChange = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections', id: string, field: string, value: any) => {
         const updatedItems = localContent[section].map((item: any) => 
             item.id === id ? { ...item, [field]: value } : item
         );
         handleChange(section, updatedItems);
     };
 
-    const handleAddItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services') => {
-        const newItem = { 
-            id: crypto.randomUUID(), 
-            title: '', 
-            artist: '', 
-            src: '',
-            sourceType: 'mp3',
-            quote: '', name: '', event: '', url: '', icon: '', description: '' 
-        };
-        // @ts-ignore
+    const handleAddItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections') => {
+        const newItem: any = { id: crypto.randomUUID() };
+        
+        if (section === 'customSections') {
+            newItem.title = 'Ny Egendefinert Seksjon';
+            newItem.content = 'Legg til innhold her...';
+            
+            const newSectionConfig: SectionConfig = {
+              id: `custom-${newItem.id}`,
+              type: 'custom',
+              label: newItem.title,
+              enabled: true,
+              customSectionId: newItem.id,
+            };
+            setLocalContent(prev => ({
+                ...prev,
+                customSections: [...prev.customSections, newItem],
+                sectionOrder: [...prev.sectionOrder, newSectionConfig]
+            }));
+            return;
+        } else if (section === 'gallery') {
+            newItem.type = 'image';
+            newItem.src = '';
+            newItem.title = '';
+        } else {
+           newItem.title = '';
+        }
+
         handleChange(section, [...localContent[section], newItem]);
     };
 
-    const handleDeleteItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services', id: string) => {
+    const handleDeleteItem = (section: 'playlist' | 'testimonials' | 'socialLinks' | 'services' | 'gallery' | 'customSections', id: string) => {
         if(window.confirm('Er du sikker på at du vil slette dette elementet?')) {
             const updatedItems = localContent[section].filter((item: any) => item.id !== id);
             handleChange(section, updatedItems);
+
+            if (section === 'customSections') {
+                const updatedOrder = localContent.sectionOrder.filter(s => s.customSectionId !== id);
+                handleChange('sectionOrder', updatedOrder);
+            }
         }
     };
 
@@ -114,6 +139,40 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
             }
         }));
     };
+
+    const handleThemeColorChange = (field: keyof ThemeColors, value: string) => {
+        setLocalContent(prev => ({
+            ...prev,
+            themeColors: {
+                ...prev.themeColors,
+                [field]: value
+            }
+        }));
+    }
+    
+    const handleSectionOrderChange = (index: number, direction: 'up' | 'down') => {
+        const newOrder = [...localContent.sectionOrder];
+        const item = newOrder[index];
+        const swapIndex = direction === 'up' ? index - 1 : index + 1;
+        
+        if (swapIndex >= 0 && swapIndex < newOrder.length) {
+            newOrder[index] = newOrder[swapIndex];
+            newOrder[swapIndex] = item;
+            handleChange('sectionOrder', newOrder);
+        }
+    }
+    
+    const handleSectionToggle = (id: string, enabled: boolean) => {
+        const newOrder = localContent.sectionOrder.map(s => s.id === id ? {...s, enabled} : s);
+        handleChange('sectionOrder', newOrder);
+    }
+    
+    const handleCustomSectionTitleChange = (id: string, newTitle: string) => {
+        handleItemChange('customSections', id, 'title', newTitle);
+        // Also update the label in sectionOrder
+        const newOrder = localContent.sectionOrder.map(s => s.customSectionId === id ? {...s, label: newTitle} : s);
+        handleChange('sectionOrder', newOrder);
+    }
 
 
     if (!isAuthenticated) {
@@ -153,9 +212,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                 </div>
 
                 <div className="space-y-10">
-                    {/* General Info & Logo */}
+                    {/* General Info, Logo & Theme */}
                     <fieldset className={fieldsetClass}>
-                        <legend className="text-2xl font-bold text-white px-2">Generell Info & Logo</legend>
+                        <legend className="text-2xl font-bold text-white px-2">Generell Info, Logo & Farger</legend>
                         <div>
                             <label htmlFor="tagline" className={labelClass}>Slagord</label>
                             <input id="tagline" type="text" value={localContent.tagline} onChange={e => handleChange('tagline', e.target.value)} className={inputClass} />
@@ -186,10 +245,61 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </div>
                             )}
                         </div>
+                        <div className="pt-4 mt-4 border-t border-dark-3 space-y-4">
+                            <h3 className="text-xl font-bold text-white">Aksentfarger</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className={labelClass}>Primærfarge</label>
+                                    <div className="flex items-center gap-2">
+                                        <input type="color" value={localContent.themeColors.primary} onChange={e => handleThemeColorChange('primary', e.target.value)} className="p-0 h-10 w-10 bg-dark-3 border-gray-600 rounded-lg cursor-pointer"/>
+                                        <input type="text" value={localContent.themeColors.primary} onChange={e => handleThemeColorChange('primary', e.target.value)} className={inputClass} placeholder="#7F00FF"/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Lys Farge (Hover)</label>
+                                    <div className="flex items-center gap-2">
+                                        <input type="color" value={localContent.themeColors.light} onChange={e => handleThemeColorChange('light', e.target.value)} className="p-0 h-10 w-10 bg-dark-3 border-gray-600 rounded-lg cursor-pointer"/>
+                                        <input type="text" value={localContent.themeColors.light} onChange={e => handleThemeColorChange('light', e.target.value)} className={inputClass} placeholder="#9233FF"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                     {/* Section Order */}
+                    <fieldset className={fieldsetClass}>
+                        <legend className="text-2xl font-bold text-white px-2">Seksjonsoppsett</legend>
+                        <p className="text-sm text-gray-400">Dra og slipp (fremtidig) eller bruk knappene for å endre rekkefølgen på seksjonene på siden din. Du kan også skjule seksjoner du ikke vil vise.</p>
+                        <div className="space-y-2">
+                            {localContent.sectionOrder.map((section, index) => {
+                                if (section.type === 'home') return null; // Don't allow reordering of home
+                                return (
+                                    <div key={section.id} className="flex items-center justify-between bg-dark-3 p-3 rounded">
+                                        <span className="font-bold text-white">{section.label}</span>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`enabled-${section.id}`}
+                                                    checked={section.enabled}
+                                                    onChange={e => handleSectionToggle(section.id, e.target.checked)}
+                                                    className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                                                />
+                                                <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
+                                            </div>
+                                            <div className="space-x-1">
+                                                <button onClick={() => handleSectionOrderChange(index, 'up')} disabled={index === 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Opp</button>
+                                                <button onClick={() => handleSectionOrderChange(index, 'down')} disabled={index === localContent.sectionOrder.length - 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Ned</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </fieldset>
 
-                     {/* Backgrounds */}
-                     <fieldset className={fieldsetClass}>
+                    {/* Backgrounds */}
+                    <fieldset className={fieldsetClass}>
                         <legend className="text-2xl font-bold text-white px-2">Seksjonsbakgrunner</legend>
                         {(Object.keys(localContent.backgrounds) as Array<keyof SectionBackgrounds>).map(section => (
                             <div key={section} className="bg-dark-3 p-4 rounded">
@@ -197,11 +307,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label className={labelClass}>Type</label>
-                                        <select 
-                                            value={localContent.backgrounds[section].type} 
-                                            onChange={e => handleBgChange(section, 'type', e.target.value)}
-                                            className={inputClass}
-                                        >
+                                        <select value={localContent.backgrounds[section].type} onChange={e => handleBgChange(section, 'type', e.target.value)} className={inputClass}>
                                             <option value="color">Farge</option>
                                             <option value="image">Bilde-URL</option>
                                         </select>
@@ -210,20 +316,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                         <label className={labelClass}>{localContent.backgrounds[section].type === 'color' ? 'Fargekode' : 'Bilde-URL'}</label>
                                         <div className="flex items-center gap-2">
                                           {localContent.backgrounds[section].type === 'color' && (
-                                            <input 
-                                              type="color" 
-                                              value={localContent.backgrounds[section].value}
-                                              onChange={e => handleBgChange(section, 'value', e.target.value)}
-                                              className="p-0 h-10 w-10 bg-dark-3 border-gray-600 rounded-lg cursor-pointer"
-                                            />
+                                            <input type="color" value={localContent.backgrounds[section].value} onChange={e => handleBgChange(section, 'value', e.target.value)} className="p-0 h-10 w-10 bg-dark-3 border-gray-600 rounded-lg cursor-pointer" />
                                           )}
-                                          <input 
-                                              type="text" 
-                                              value={localContent.backgrounds[section].value} 
-                                              onChange={e => handleBgChange(section, 'value', e.target.value)}
-                                              className={inputClass} 
-                                              placeholder={localContent.backgrounds[section].type === 'color' ? '#0D0D0D' : 'https://example.com/image.jpg'}
-                                          />
+                                          <input type="text" value={localContent.backgrounds[section].value} onChange={e => handleBgChange(section, 'value', e.target.value)} className={inputClass} placeholder={localContent.backgrounds[section].type === 'color' ? '#0D0D0D' : 'https://example.com/image.jpg'} />
                                         </div>
                                     </div>
                                 </div>
@@ -231,7 +326,63 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         ))}
                     </fieldset>
 
-                    {/* Social Links */}
+                     {/* Media Gallery */}
+                    <fieldset className={fieldsetClass}>
+                        <legend className="text-2xl font-bold text-white px-2">Mediegalleri</legend>
+                        {localContent.gallery.map((item, index) => (
+                            <div key={item.id} className="bg-dark-3 p-4 rounded space-y-4">
+                               <div className="flex justify-between items-center">
+                                    <p className="text-gray-400 font-bold">Media {index + 1}</p>
+                                    <button onClick={() => handleDeleteItem('gallery', item.id)} className={`${dangerButtonClass} text-xs`}>Slett</button>
+                               </div>
+                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                   <div>
+                                       <label className={labelClass}>Type</label>
+                                       <select value={item.type} onChange={e => handleItemChange('gallery', item.id, 'type', e.target.value)} className={inputClass}>
+                                           <option value="image">Bilde</option>
+                                           <option value="youtube">YouTube Video</option>
+                                       </select>
+                                   </div>
+                                   <div className="md:col-span-2">
+                                       <label className={labelClass}>{item.type === 'image' ? 'Bilde-URL' : 'YouTube Video-URL'}</label>
+                                       <input type="text" value={item.src} onChange={e => handleItemChange('gallery', item.id, 'src', e.target.value)} className={inputClass} placeholder="Lim inn URL..." />
+                                   </div>
+                               </div>
+                                <div>
+                                    <label className={labelClass}>Tittel (valgfritt)</label>
+                                    <input type="text" value={item.title} onChange={e => handleItemChange('gallery', item.id, 'title', e.target.value)} className={inputClass} />
+                               </div>
+                           </div>
+                        ))}
+                        <button onClick={() => handleAddItem('gallery')} className={buttonClass}>Legg til Media</button>
+                    </fieldset>
+                    
+                    {/* Custom Sections */}
+                    <fieldset className={fieldsetClass}>
+                        <legend className="text-2xl font-bold text-white px-2">Egendefinerte Seksjoner</legend>
+                        {localContent.customSections.map((section, index) => (
+                             <div key={section.id} className="bg-dark-3 p-4 rounded space-y-4">
+                                <div className="flex justify-between items-center">
+                                     <p className="text-gray-400 font-bold">Egendefinert Seksjon {index + 1}</p>
+                                     <button onClick={() => handleDeleteItem('customSections', section.id)} className={`${dangerButtonClass} text-xs`}>Slett</button>
+                                </div>
+                                <div>
+                                    <label className={labelClass}>Tittel</label>
+                                    <input type="text" value={section.title} onChange={e => handleCustomSectionTitleChange(section.id, e.target.value)} className={inputClass} />
+                                </div>
+                                <div>
+                                     <label className={labelClass}>Innhold (støtter enkel HTML)</label>
+                                     <textarea value={section.content} onChange={e => handleItemChange('customSections', section.id, 'content', e.target.value)} className={`${inputClass} h-32`} rows={6}></textarea>
+                                </div>
+                            </div>
+                        ))}
+                        <button onClick={() => handleAddItem('customSections')} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
+                    </fieldset>
+
+                    {/* Social Links, Playlist, Services, Testimonials, Contact, Admin... */}
+                    {/* ... (rest of the existing fieldsets from before) ... */}
+
+                     {/* Social Links */}
                     <fieldset className={fieldsetClass}>
                         <legend className="text-2xl font-bold text-white px-2">Sosiale Lenker</legend>
                         {localContent.socialLinks.map((link, index) => (
@@ -241,12 +392,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 <div><label className={labelClass}>URL</label><input type="text" value={link.url} onChange={e => handleItemChange('socialLinks', link.id, 'url', e.target.value)} className={inputClass} /></div>
                                 <div className="md:col-span-1 self-start">
                                     <label className={labelClass}>Ikon (URL / SVG-kode)</label>
-                                    <textarea 
-                                        value={link.icon} 
-                                        onChange={e => handleItemChange('socialLinks', link.id, 'icon', e.target.value)} 
-                                        className={`${inputClass} h-24 font-mono text-xs`} 
-                                        placeholder="Lim inn URL til .svg-fil, eller selve <svg>...</svg> koden."
-                                    />
+                                    <textarea value={link.icon} onChange={e => handleItemChange('socialLinks', link.id, 'icon', e.target.value)} className={`${inputClass} h-24 font-mono text-xs`} placeholder="Lim inn URL til .svg-fil, eller selve <svg>...</svg> koden." />
                                 </div>
                                 <div><button onClick={() => handleDeleteItem('socialLinks', link.id)} className={`${dangerButtonClass} w-full`}>Slett</button></div>
                             </div>
@@ -263,11 +409,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                    <div>
                                        <label className={labelClass}>Kildetype</label>
-                                       <select 
-                                           value={track.sourceType || 'mp3'} 
-                                           onChange={e => handleItemChange('playlist', track.id, 'sourceType', e.target.value)}
-                                           className={inputClass}
-                                       >
+                                       <select value={track.sourceType || 'mp3'} onChange={e => handleItemChange('playlist', track.id, 'sourceType', e.target.value)} className={inputClass}>
                                            <option value="mp3">MP3</option>
                                            <option value="youtube">YouTube</option>
                                            <option value="spotify">Spotify</option>
@@ -278,9 +420,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                </div>
                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                                    <div className="md:col-span-3">
-                                       <label className={labelClass}>
-                                           {track.sourceType === 'youtube' ? 'YouTube Video URL' : track.sourceType === 'spotify' ? 'Spotify Track URL' : 'MP3 Fil-URL'}
-                                       </label>
+                                       <label className={labelClass}>{track.sourceType === 'youtube' ? 'YouTube Video URL' : track.sourceType === 'spotify' ? 'Spotify Track URL' : 'MP3 Fil-URL'}</label>
                                        <input type="text" value={track.src} onChange={e => handleItemChange('playlist', track.id, 'src', e.target.value)} className={inputClass} />
                                    </div>
                                    <div><button onClick={() => handleDeleteItem('playlist', track.id)} className={`${dangerButtonClass} w-full`}>Slett</button></div>

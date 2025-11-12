@@ -54,7 +54,7 @@ const BookingForm: React.FC = () => {
       <div className="text-center p-8 bg-dark-3 rounded-lg">
         <h3 className="text-2xl font-bold text-white mb-2">Takk!</h3>
         <p className="text-gray-300">Forespørselen din er klargjort. Vennligst fullfør og send den fra ditt e-postprogram for å fullføre bookingen.</p>
-        <button onClick={() => setSubmitted(false)} className="mt-6 px-6 py-2 bg-brand-purple text-white font-semibold rounded-lg hover:bg-brand-purple-light transition-colors">
+        <button onClick={() => setSubmitted(false)} className="mt-6 px-6 py-2 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-[var(--color-light)] transition-colors">
           Send en ny forespørsel
         </button>
       </div>
@@ -66,21 +66,21 @@ const BookingForm: React.FC = () => {
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Fullt Navn</label>
-          <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+          <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"/>
         </div>
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">Telefonnummer</label>
-          <input type="tel" name="phone" id="phone" required value={formData.phone} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+          <input type="tel" name="phone" id="phone" required value={formData.phone} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"/>
         </div>
       </div>
        <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">E-postadresse</label>
-          <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+          <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"/>
         </div>
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="eventType" className="block text-sm font-medium text-gray-300 mb-1">Type Arrangement</label>
-          <select name="eventType" id="eventType" required value={formData.eventType} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple">
+          <select name="eventType" id="eventType" required value={formData.eventType} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]">
             <option value="">Velg en arrangementstype</option>
             <option>Firmaevent</option>
             <option>Bryllup</option>
@@ -91,13 +91,13 @@ const BookingForm: React.FC = () => {
         </div>
         <div>
           <label htmlFor="eventDate" className="block text-sm font-medium text-gray-300 mb-1">Dato for Arrangement</label>
-          <input type="date" name="eventDate" id="eventDate" required value={formData.eventDate} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+          <input type="date" name="eventDate" id="eventDate" required value={formData.eventDate} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"/>
         </div>
       </div>
        <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="soundAndLight" className="block text-sm font-medium text-gray-300 mb-1">Lyd og lys?</label>
-          <select name="soundAndLight" id="soundAndLight" required value={formData.soundAndLight} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple">
+          <select name="soundAndLight" id="soundAndLight" required value={formData.soundAndLight} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]">
             <option value="">Velg et alternativ</option>
             <option>Full pakke</option>
             <option>Kun lyd</option>
@@ -106,15 +106,15 @@ const BookingForm: React.FC = () => {
         </div>
         <div>
           <label htmlFor="budget" className="block text-sm font-medium text-gray-300 mb-1">Budsjett</label>
-          <input type="text" name="budget" id="budget" value={formData.budget} onChange={handleChange} placeholder="Valgfritt" className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"/>
+          <input type="text" name="budget" id="budget" value={formData.budget} onChange={handleChange} placeholder="Valgfritt" className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"/>
         </div>
       </div>
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">Ytterligere Detaljer</label>
-        <textarea name="message" id="message" rows={5} value={formData.message} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-brand-purple focus:border-brand-purple"></textarea>
+        <textarea name="message" id="message" rows={5} value={formData.message} onChange={handleChange} className="w-full bg-dark-3 border-gray-600 rounded-lg p-3 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"></textarea>
       </div>
       <div>
-        <button type="submit" className="w-full px-8 py-4 bg-brand-purple text-white font-bold text-lg rounded-lg shadow-lg hover:bg-brand-purple-light transition-all duration-300 transform hover:scale-105">
+        <button type="submit" className="w-full px-8 py-4 bg-[var(--color-primary)] text-white font-bold text-lg rounded-lg shadow-lg hover:bg-[var(--color-light)] transition-all duration-300 transform hover:scale-105">
           Send Forespørsel
         </button>
       </div>
@@ -147,8 +147,8 @@ export const BookingPage: React.FC = () => {
             <div className="space-y-6 text-gray-300">
                 <div className="bg-dark-2 p-6 rounded-lg border border-dark-3">
                     <h3 className="text-xl font-bold text-white mb-2">Kontaktinformasjon</h3>
-                    <p>E-post: <a href={`mailto:${contactInfo.email}`} className="text-brand-purple hover:underline">{contactInfo.email}</a></p>
-                    <p>Telefon: <a href={`tel:${contactInfo.phone}`} className="text-brand-purple hover:underline">{contactInfo.phone}</a></p>
+                    <p>E-post: <a href={`mailto:${contactInfo.email}`} className="text-[var(--color-primary)] hover:underline">{contactInfo.email}</a></p>
+                    <p>Telefon: <a href={`tel:${contactInfo.phone}`} className="text-[var(--color-primary)] hover:underline">{contactInfo.phone}</a></p>
                 </div>
                  <div className="bg-dark-2 p-6 rounded-lg border border-dark-3">
                     <h3 className="text-xl font-bold text-white mb-2">Bookingprosess</h3>

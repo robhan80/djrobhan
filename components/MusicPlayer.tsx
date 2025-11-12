@@ -151,7 +151,7 @@ export const MusicPlayer: React.FC = () => {
                   className="w-full bg-dark-3 rounded-full h-2 cursor-pointer"
                   onClick={handleProgressClick}
               >
-                  <div className="bg-brand-purple h-2 rounded-full" style={{ width: `${(progress / duration) * 100}%` }}></div>
+                  <div className="bg-[var(--color-primary)] h-2 rounded-full" style={{ width: `${(progress / duration) * 100}%` }}></div>
               </div>
               <div className="flex justify-between text-xs text-gray-400 mt-1">
                   <span>{formatTime(progress)}</span>
@@ -160,7 +160,7 @@ export const MusicPlayer: React.FC = () => {
           </div>
           <div className="flex items-center justify-center space-x-6 mt-4 text-white">
               <button onClick={handlePrev} className="p-2 rounded-full hover:bg-dark-3 transition-colors duration-300" aria-label="Forrige spor"><PrevIcon /></button>
-              <button onClick={handlePlayPause} className="p-4 bg-brand-purple rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300" aria-label={isPlaying ? 'Pause' : 'Spill'}>
+              <button onClick={handlePlayPause} className="p-4 bg-[var(--color-primary)] rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300" aria-label={isPlaying ? 'Pause' : 'Spill'}>
                   {isPlaying ? <PauseIcon /> : <PlayIcon />}
               </button>
               <button onClick={handleNext} className="p-2 rounded-full hover:bg-dark-3 transition-colors duration-300" aria-label="Neste spor"><NextIcon /></button>

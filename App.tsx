@@ -1,9 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-import { View } from './types';
+import { View, SectionConfig } from './types';
 import { LandingPage } from './pages/LandingPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { TestimonialsPage } from './pages/TestimonialsPage';
 import { BookingPage } from './pages/BookingPage';
+import { GalleryPage } from './pages/GalleryPage';
+import { CustomSectionPage } from './pages/CustomSectionPage';
 import { AdminPage } from './pages/AdminPage';
 import { ContentProvider } from './context/ContentContext';
 import { useContent } from './hooks/useContent';
@@ -12,12 +15,12 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { content } = useContent();
 
-  const navItems = [
-    { id: 'home', label: 'Hjem' },
-    { id: 'services', label: 'Tjenester' },
-    { id: 'testimonials', label: 'Referanser' },
-    { id: 'booking', label: 'Book Nå' },
-  ];
+  const navItems = content.sectionOrder
+    .filter(section => section.enabled && section.type !== 'home')
+    .map(section => ({ id: section.id, label: section.label }));
+
+  const bookingItem = navItems.find(item => item.id === 'booking');
+  const regularItems = navItems.filter(item => item.id !== 'booking');
   
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -33,8 +36,8 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
       href={`#${id}`}
       onClick={(e) => handleNavClick(e, id)}
       className={`px-3 py-2 lg:px-4 rounded-md text-sm lg:text-base font-semibold transition-colors duration-300 ${
-        activeSection === id ? 'text-brand-purple' : 'text-light-2 hover:text-white'
-      } ${id === 'booking' ? 'bg-brand-purple text-white hover:bg-light-1 hover:text-brand-purple' : ''}`}
+        activeSection === id ? 'text-[var(--color-primary)]' : 'text-light-2 hover:text-white'
+      } ${id === 'booking' ? 'bg-[var(--color-primary)] text-white hover:bg-light-1 hover:text-[var(--color-primary)]' : ''}`}
       aria-current={activeSection === id ? 'page' : undefined}
     >
       {label}
@@ -68,7 +71,9 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
         <div className="relative flex items-center justify-between h-20 lg:h-28">
           {/* Left: Nav items (Desktop) */}
           <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {navItems.map(item => <NavLink key={item.id} {...item} />)}
+            <NavLink id="home" label="Hjem" />
+            {regularItems.map(item => <NavLink key={item.id} {...item} />)}
+            {bookingItem && <NavLink key={bookingItem.id} {...bookingItem} />}
           </nav>
           
           {/* Left: Logo (Mobile) */}
@@ -87,7 +92,7 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
             <div className="hidden md:flex items-center space-x-4 lg:space-x-5">
               <div className="flex items-center space-x-4 lg:space-x-5">
                   {content.socialLinks.map(link => (
-                      <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-brand-purple transition-colors duration-300">
+                      <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-[var(--color-primary)] transition-colors duration-300">
                           <span className="sr-only">{link.name}</span>
                           <div className="w-6 h-6 lg:w-7 lg:h-7">
                               {link.icon.trim().startsWith('<svg') ? (
@@ -115,10 +120,12 @@ const Header: React.FC<{ activeSection: string; }> = ({ activeSection }) => {
       {isMenuOpen && (
         <div className="md:hidden bg-dark-2">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col items-center">
-            {navItems.map(item => <NavLink key={item.id} {...item} />)}
+            <NavLink id="home" label="Hjem" />
+            {regularItems.map(item => <NavLink key={item.id} {...item} />)}
+            {bookingItem && <NavLink key={bookingItem.id} {...bookingItem} />}
             <div className="flex justify-center space-x-6 mt-4 pt-4 border-t border-dark-3 w-full">
                 {content.socialLinks.map(link => (
-                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-brand-purple transition-colors duration-300">
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-[var(--color-primary)] transition-colors duration-300">
                     <span className="sr-only">{link.name}</span>
                     <div className="w-7 h-7">
                         {link.icon.trim().startsWith('<svg') ? (
@@ -144,7 +151,7 @@ const Footer: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400">
             <div className="flex justify-center space-x-6 mb-4">
                 {content.socialLinks.map(link => (
-                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-brand-purple transition-colors duration-300">
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-light-2 hover:text-[var(--color-primary)] transition-colors duration-300">
                     <span className="sr-only">{link.name}</span>
                     <div className="w-6 h-6">
                         {link.icon.trim().startsWith('<svg') ? (
@@ -158,17 +165,50 @@ const Footer: React.FC<{ setView: (view: View) => void }> = ({ setView }) => {
             </div>
             <p>&copy; {new Date().getFullYear()} {content.logo.text}. Alle Rettigheter Forbeholdt.</p>
             <div className="text-xs mt-2">
-                <button onClick={() => setView(View.Admin)} className="hover:text-brand-purple transition-colors">Admin</button>
+                <button onClick={() => setView(View.Admin)} className="hover:text-[var(--color-primary)] transition-colors">Admin</button>
             </div>
             </div>
         </footer>
     );
 };
 
+const renderSection = (section: SectionConfig, allCustomSections: any[]) => {
+  switch(section.type) {
+    case 'home':
+      return <LandingPage key={section.id} />;
+    case 'services':
+      return <ServicesPage key={section.id} />;
+    case 'testimonials':
+      return <TestimonialsPage key={section.id} />;
+    case 'booking':
+      return <BookingPage key={section.id} />;
+    case 'gallery':
+      return <GalleryPage key={section.id} />;
+    case 'custom':
+      const customSectionData = allCustomSections.find(cs => cs.id === section.customSectionId);
+      return customSectionData ? <CustomSectionPage key={section.id} section={customSectionData} /> : null;
+    default:
+      return null;
+  }
+}
 
 const AppContent: React.FC = () => {
   const [view, setView] = useState<View>(View.Main);
   const [activeSection, setActiveSection] = useState('home');
+  const { content } = useContent();
+
+  useEffect(() => {
+    const { primary, light } = content.themeColors;
+    const styleEl = document.getElementById('dynamic-theme-styles');
+    if (styleEl) {
+        styleEl.innerHTML = `
+        :root {
+            --color-primary: ${primary};
+            --color-light: ${light};
+        }
+        `;
+    }
+}, [content.themeColors]);
 
   useEffect(() => {
     if (view !== View.Main) return;
@@ -190,7 +230,7 @@ const AppContent: React.FC = () => {
     return () => {
       sections.forEach(section => observer.unobserve(section));
     };
-  }, [view]);
+  }, [view, content.sectionOrder]);
   
   if (view === View.Admin) {
     return <AdminPage setView={setView} />;
@@ -201,10 +241,10 @@ const AppContent: React.FC = () => {
       <Header activeSection={activeSection} />
       <main className="flex-grow">
         <div className="animate-fade-in">
-          <LandingPage />
-          <ServicesPage />
-          <TestimonialsPage />
-          <BookingPage />
+          {content.sectionOrder
+            .filter(section => section.enabled)
+            .map(section => renderSection(section, content.customSections))
+          }
         </div>
       </main>
       <Footer setView={setView}/>

@@ -5,7 +5,7 @@ import { useContent } from '../hooks/useContent';
 
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
   <div className="bg-dark-2 p-6 rounded-lg border border-dark-3 transform hover:-translate-y-2 transition-transform duration-300 shadow-lg">
-    <div className="text-brand-purple mb-4">
+    <div className="text-[var(--color-primary)] mb-4">
       <svg className="w-12 h-12" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d={service.icon} />
       </svg>

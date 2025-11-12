@@ -1,3 +1,4 @@
+
 import { AppContent } from './types';
 
 export const initialData: AppContent = {
@@ -74,6 +75,20 @@ export const initialData: AppContent = {
     services: { type: 'color', value: "#0D0D0D" },
     testimonials: { type: 'color', value: "#1A1A1A" },
     booking: { type: 'color', value: "#0D0D0D" },
+    gallery: { type: 'color', value: "#1A1A1A" },
   },
   adminPassword: "admin",
+  themeColors: {
+    primary: '#7F00FF',
+    light: '#9233FF',
+  },
+  sectionOrder: [
+    { id: 'home', type: 'home', label: 'Hjem', enabled: true },
+    { id: 'services', type: 'services', label: 'Tjenester', enabled: true },
+    { id: 'testimonials', type: 'testimonials', label: 'Referanser', enabled: true },
+    { id: 'gallery', type: 'gallery', label: 'Galleri', enabled: true },
+    { id: 'booking', type: 'booking', label: 'Book Nå', enabled: true },
+  ],
+  gallery: [],
+  customSections: [],
 };

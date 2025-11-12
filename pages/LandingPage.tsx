@@ -35,7 +35,7 @@ export const LandingPage: React.FC = () => {
             <MusicPlayer />
         </div>
         
-        <a href="#booking" onClick={handleScrollToBooking} className="px-8 py-4 bg-brand-purple text-white font-bold text-lg rounded-lg shadow-lg hover:bg-brand-purple-light transition-all duration-300 transform hover:scale-105">
+        <a href="#booking" onClick={handleScrollToBooking} className="px-8 py-4 bg-[var(--color-primary)] text-white font-bold text-lg rounded-lg shadow-lg hover:bg-[var(--color-light)] transition-all duration-300 transform hover:scale-105">
           Gjør Ditt Arrangement Uforglemmelig
         </a>
       </div>

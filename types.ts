@@ -49,12 +49,41 @@ export interface SectionBackgrounds {
   services: BackgroundSettings;
   testimonials: BackgroundSettings;
   booking: BackgroundSettings;
+  gallery: BackgroundSettings; // Added for new section
 }
 
 export interface Logo {
   type: 'text' | 'image';
   text: string;
   imageUrl: string;
+}
+
+export interface ThemeColors {
+    primary: string;
+    light: string;
+}
+
+export type SectionType = 'home' | 'services' | 'testimonials' | 'booking' | 'gallery' | 'custom';
+
+export interface SectionConfig {
+  id: string; // Used for element ID and key
+  type: SectionType;
+  label: string; // Navigation label
+  enabled: boolean;
+  customSectionId?: string; // Link to a specific custom section if type is 'custom'
+}
+
+export interface MediaItem {
+  id: string;
+  type: 'image' | 'youtube';
+  src: string; // Image URL or YouTube video URL
+  title: string;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  content: string; // Can contain simple HTML
 }
 
 export interface AppContent {
@@ -67,4 +96,9 @@ export interface AppContent {
   contactInfo: ContactInfo;
   backgrounds: SectionBackgrounds;
   adminPassword: string;
+  themeColors: ThemeColors;
+  // New customizable features
+  sectionOrder: SectionConfig[];
+  gallery: MediaItem[];
+  customSections: CustomSection[];
 }

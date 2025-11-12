@@ -5,7 +5,7 @@ import { useContent } from '../hooks/useContent';
 
 const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => (
   <div className="bg-dark-2 p-8 rounded-lg border border-dark-3 shadow-lg flex flex-col h-full">
-    <div className="text-brand-purple mb-4">
+    <div className="text-[var(--color-primary)] mb-4">
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M10 9a3 3 0 100-6 3 3 0 000 6zM10 11a6 6 0 00-6 6v1a1 1 0 001 1h10a1 1 0 001-1v-1a6 6 0 00-6-6z"></path>
         </svg>
