@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DJ Spark | Offisiell Booking Side</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-purple': '#7F00FF',
+              'brand-purple-light': '#9233FF',
+              'dark-1': '#0D0D0D',
+              'dark-2': '#1A1A1A',
+              'dark-3': '#2A2A2A',
+              'light-1': '#F5F5F5',
+              'light-2': '#E0E0E0',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+            },
+          },
+        },
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+<style>
+  html {
+    scroll-behavior: smooth;
+    /* 80px for mobile header */
+    scroll-padding-top: 5rem;
+  }
+  @media (min-width: 1024px) {
+    html {
+      /* 112px for larger desktop header */
+      scroll-padding-top: 7rem;
+    }
+  }
+</style>
+</head>
+  <body class="bg-dark-1 text-light-1">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
