@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -5,7 +6,7 @@ import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, 
 // Admin page styling
 const inputClass = "w-full bg-dark-3 border border-gray-600 rounded-lg p-2 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]";
 const labelClass = "block text-sm font-medium text-gray-300 mb-1";
-const fieldsetClass = "bg-dark-2 p-6 rounded-lg border border-dark-3 space-y-4";
+const sectionBoxClass = "bg-dark-2 p-6 rounded-lg border border-dark-3 space-y-4";
 const buttonClass = "px-4 py-2 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-[var(--color-light)] transition-colors";
 const dangerButtonClass = "px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors";
 const secondaryButtonClass = "px-3 py-1 bg-dark-3 text-sm text-light-2 font-semibold rounded-lg hover:bg-gray-600 transition-colors";
@@ -361,7 +362,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                 <div className="space-y-10">
                     {/* General Info, Logo & Theme */}
-                    <fieldset className={fieldsetClass}>
+                    <div className={sectionBoxClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Generell Info, Logo & Farger</div>
                         <div>
                             <label htmlFor="tagline" className={labelClass}>Slagord</label>
@@ -426,7 +427,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 ))}
                             </select>
                         </div>
-                    </fieldset>
+                    </div>
                     
                     {localContent.sectionOrder.map((section, index) => {
                       if (section.type === 'home') return null;
@@ -521,20 +522,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         : section.label;
 
                       return (
-                        <fieldset key={section.id} className={fieldsetClass}>
+                        <div key={section.id} className={sectionBoxClass}>
                           <div className="flex justify-between items-center w-full flex-wrap gap-2 mb-4 border-b border-dark-3 pb-4">
                               <span className="text-2xl font-bold text-white">{sectionLabel}</span>
                               <SectionControls section={section} index={index}/>
                           </div>
                           {getSectionContent()}
-                        </fieldset>
+                        </div>
                       );
                     })}
 
                     <button onClick={() => setIsTemplateModalOpen(true)} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
 
                     {/* Backgrounds */}
-                    <fieldset className={fieldsetClass}>
+                    <div className={sectionBoxClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Seksjonsbakgrunner</div>
                         {(Object.keys(localContent.backgrounds) as Array<keyof SectionBackgrounds>).map(section => (
                             <div key={section} className="bg-dark-3 p-4 rounded mb-4">
@@ -559,10 +560,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </div>
                             </div>
                         ))}
-                    </fieldset>
+                    </div>
 
                      {/* Social Links */}
-                    <fieldset className={fieldsetClass}>
+                    <div className={sectionBoxClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Sosiale Lenker</div>
                         {localContent.socialLinks.map((link, index) => (
                             <div key={link.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-dark-3 p-4 rounded mb-4">
@@ -577,10 +578,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                             </div>
                         ))}
                         <button onClick={() => handleAddItem('socialLinks')} className={buttonClass}>Legg til Sosial Lenke</button>
-                    </fieldset>
+                    </div>
 
                     {/* Playlist */}
-                    <fieldset className={fieldsetClass}>
+                    <div className={sectionBoxClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Musikkspilleliste</div>
                         {localContent.playlist.map((track: Track, index) => (
                             <div key={track.id} className="bg-dark-3 p-4 rounded space-y-4 mb-4">
@@ -607,10 +608,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                            </div>
                         ))}
                         <button onClick={() => handleAddItem('playlist')} className={buttonClass}>Legg til Spor</button>
-                    </fieldset>
+                    </div>
                     
                     {/* Contact Info */}
-                    <fieldset className={fieldsetClass}>
+                    <div className={sectionBoxClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Kontaktinfo</div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -632,10 +633,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                             <p className="text-xs text-gray-400 mb-2">For at kontaktskjemaet skal sende e-post direkte, lim inn din unike URL fra en tjeneste som Formspree her.</p>
                             <input id="formspreeEndpoint" type="text" value={localContent.contactInfo.formspreeEndpoint} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, formspreeEndpoint: e.target.value})} className={inputClass} placeholder="https://formspree.io/f/din_unike_id" />
                         </div>
-                    </fieldset>
+                    </div>
 
                     {/* Admin Settings */}
-                    <fieldset className={fieldsetClass}>
+                    <div className={sectionBoxClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Admin-innstillinger</div>
                         <div className="space-y-4">
                             <div>
@@ -659,7 +660,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </p>
                             )}
                         </div>
-                    </fieldset>
+                    </div>
                 </div>
             </div>
         </div>

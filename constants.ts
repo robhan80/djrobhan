@@ -1,5 +1,4 @@
 
-
 import { Track, Service, Testimonial } from './types';
 
 export const DJ_NAME = "DJ Spark";

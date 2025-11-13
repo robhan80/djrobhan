@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CustomSection, SectionConfig } from '../types';
 import { useContent } from '../hooks/useContent';
