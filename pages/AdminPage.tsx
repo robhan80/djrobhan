@@ -324,7 +324,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                   id={`showTitle-${section.id}`}
                   checked={section.showTitle}
                   onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)] accent-[var(--color-primary)]"
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
               />
               <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
           </div>
@@ -334,7 +334,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                   id={`enabled-${section.id}`}
                   checked={section.enabled}
                   onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)] accent-[var(--color-primary)]"
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
               />
               <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
           </div>
@@ -522,8 +522,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                       return (
                         <div key={section.id} className={sectionBoxClass}>
-                          <div className="grid grid-cols-[1fr_auto] items-center gap-4 w-full mb-4 border-b border-dark-3 pb-4">
-                              <span className="text-2xl font-bold text-white">{sectionLabel}</span>
+                           <div className="flex justify-between items-center gap-4 w-full mb-4 border-b border-dark-3 pb-4 flex-wrap md:flex-nowrap">
+                              <h3 className="text-2xl font-bold text-white whitespace-nowrap">{sectionLabel}</h3>
                               <SectionControls section={section} index={index}/>
                           </div>
                           {getSectionContent()}
