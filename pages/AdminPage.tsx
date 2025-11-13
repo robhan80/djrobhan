@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -325,7 +324,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                   id={`showTitle-${section.id}`}
                   checked={section.showTitle}
                   onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)] accent-[var(--color-primary)]"
               />
               <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
           </div>
@@ -335,7 +334,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                   id={`enabled-${section.id}`}
                   checked={section.enabled}
                   onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)] accent-[var(--color-primary)]"
               />
               <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
           </div>
@@ -523,7 +522,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                       return (
                         <div key={section.id} className={sectionBoxClass}>
-                          <div className="flex justify-between items-center w-full flex-wrap gap-2 mb-4 border-b border-dark-3 pb-4">
+                          <div className="grid grid-cols-[1fr_auto] items-center gap-4 w-full mb-4 border-b border-dark-3 pb-4">
                               <span className="text-2xl font-bold text-white">{sectionLabel}</span>
                               <SectionControls section={section} index={index}/>
                           </div>
