@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -6,7 +5,7 @@ import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, 
 // Admin page styling
 const inputClass = "w-full bg-dark-3 border border-gray-600 rounded-lg p-2 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]";
 const labelClass = "block text-sm font-medium text-gray-300 mb-1";
-const sectionBoxClass = "bg-dark-2 p-6 rounded-lg border border-dark-3 space-y-4";
+const fieldsetClass = "bg-dark-2 p-6 rounded-lg border border-dark-3 space-y-4";
 const buttonClass = "px-4 py-2 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-[var(--color-light)] transition-colors";
 const dangerButtonClass = "px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors";
 const secondaryButtonClass = "px-3 py-1 bg-dark-3 text-sm text-light-2 font-semibold rounded-lg hover:bg-gray-600 transition-colors";
@@ -318,16 +317,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     }
 
     const SectionControls: React.FC<{section: SectionConfig, index: number}> = ({ section, index }) => (
-      <div className="flex items-center gap-4 justify-end flex-nowrap">
+      <div className="flex items-center gap-4 flex-wrap justify-end">
           <div className="flex items-center gap-2">
               <input
                   type="checkbox"
                   id={`showTitle-${section.id}`}
                   checked={section.showTitle}
                   onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
-                  className="w-4 h-4 accent-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
               />
-              <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300 whitespace-nowrap">Vis Tittel</label>
+              <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
           </div>
           <div className="flex items-center gap-2">
               <input
@@ -335,11 +334,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                   id={`enabled-${section.id}`}
                   checked={section.enabled}
                   onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
-                  className="w-4 h-4 accent-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
               />
               <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="space-x-1">
               <button onClick={() => handleSectionOrderChange(index, 'up')} disabled={index === 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Opp</button>
               <button onClick={() => handleSectionOrderChange(index, 'down')} disabled={index === localContent.sectionOrder.length - 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Ned</button>
           </div>
@@ -362,7 +361,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                 <div className="space-y-10">
                     {/* General Info, Logo & Theme */}
-                    <div className={sectionBoxClass}>
+                    <fieldset className={fieldsetClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Generell Info, Logo & Farger</div>
                         <div>
                             <label htmlFor="tagline" className={labelClass}>Slagord</label>
@@ -427,7 +426,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 ))}
                             </select>
                         </div>
-                    </div>
+                    </fieldset>
                     
                     {localContent.sectionOrder.map((section, index) => {
                       if (section.type === 'home') return null;
@@ -522,22 +521,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                         : section.label;
 
                       return (
-                        <div key={section.id} className={sectionBoxClass}>
-                          <div className="flex items-center justify-between gap-4 w-full flex-nowrap border-b border-dark-3 pb-4 mb-4">
-                              <h3 className="text-2xl font-bold text-white flex-grow whitespace-nowrap overflow-hidden text-ellipsis">{sectionLabel}</h3>
-                              <div className="flex-shrink-0">
-                                <SectionControls section={section} index={index}/>
-                              </div>
+                        <fieldset key={section.id} className={fieldsetClass}>
+                          <div className="flex justify-between items-center w-full flex-wrap gap-2 mb-4 border-b border-dark-3 pb-4">
+                              <span className="text-2xl font-bold text-white">{sectionLabel}</span>
+                              <SectionControls section={section} index={index}/>
                           </div>
                           {getSectionContent()}
-                        </div>
+                        </fieldset>
                       );
                     })}
 
                     <button onClick={() => setIsTemplateModalOpen(true)} className={buttonClass}>Opprett Ny Egendefinert Seksjon</button>
 
                     {/* Backgrounds */}
-                    <div className={sectionBoxClass}>
+                    <fieldset className={fieldsetClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Seksjonsbakgrunner</div>
                         {(Object.keys(localContent.backgrounds) as Array<keyof SectionBackgrounds>).map(section => (
                             <div key={section} className="bg-dark-3 p-4 rounded mb-4">
@@ -562,10 +559,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </fieldset>
 
                      {/* Social Links */}
-                    <div className={sectionBoxClass}>
+                    <fieldset className={fieldsetClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Sosiale Lenker</div>
                         {localContent.socialLinks.map((link, index) => (
                             <div key={link.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-dark-3 p-4 rounded mb-4">
@@ -580,10 +577,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                             </div>
                         ))}
                         <button onClick={() => handleAddItem('socialLinks')} className={buttonClass}>Legg til Sosial Lenke</button>
-                    </div>
+                    </fieldset>
 
                     {/* Playlist */}
-                    <div className={sectionBoxClass}>
+                    <fieldset className={fieldsetClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Musikkspilleliste</div>
                         {localContent.playlist.map((track: Track, index) => (
                             <div key={track.id} className="bg-dark-3 p-4 rounded space-y-4 mb-4">
@@ -610,10 +607,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                            </div>
                         ))}
                         <button onClick={() => handleAddItem('playlist')} className={buttonClass}>Legg til Spor</button>
-                    </div>
+                    </fieldset>
                     
                     {/* Contact Info */}
-                    <div className={sectionBoxClass}>
+                    <fieldset className={fieldsetClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Kontaktinfo</div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -635,10 +632,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                             <p className="text-xs text-gray-400 mb-2">For at kontaktskjemaet skal sende e-post direkte, lim inn din unike URL fra en tjeneste som Formspree her.</p>
                             <input id="formspreeEndpoint" type="text" value={localContent.contactInfo.formspreeEndpoint} onChange={e => handleChange('contactInfo', {...localContent.contactInfo, formspreeEndpoint: e.target.value})} className={inputClass} placeholder="https://formspree.io/f/din_unike_id" />
                         </div>
-                    </div>
+                    </fieldset>
 
                     {/* Admin Settings */}
-                    <div className={sectionBoxClass}>
+                    <fieldset className={fieldsetClass}>
                         <div className="text-2xl font-bold text-white px-2 mb-4">Admin-innstillinger</div>
                         <div className="space-y-4">
                             <div>
@@ -662,7 +659,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                                 </p>
                             )}
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
             </div>
         </div>
