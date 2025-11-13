@@ -83,8 +83,6 @@ export const GalleryPage: React.FC<PageProps> = ({ sectionConfig, showMusicPlaye
             : { backgroundColor: bg.value };
 
     if (!gallery || gallery.length === 0) {
-        // Still render the section shell if the title is to be shown or music player,
-        // even if there's no content yet.
         if (!sectionConfig.showTitle && !showMusicPlayer) return null;
     }
 
@@ -103,7 +101,7 @@ export const GalleryPage: React.FC<PageProps> = ({ sectionConfig, showMusicPlaye
                         <MusicPlayer />
                     </div>
                 )}
-                {gallery && gallery.length > 0 && (
+                {gallery && gallery.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {gallery.map((item) => (
                             <div
@@ -127,6 +125,8 @@ export const GalleryPage: React.FC<PageProps> = ({ sectionConfig, showMusicPlaye
                             </div>
                         ))}
                     </div>
+                ) : (
+                    sectionConfig.enabled && <p className="text-center text-gray-500">Galleriet er tomt. Legg til bilder og videoer i admin-panelet.</p>
                 )}
             </div>
             {selectedItem && <Lightbox item={selectedItem} onClose={() => setSelectedItem(null)} />}

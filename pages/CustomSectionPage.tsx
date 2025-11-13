@@ -12,10 +12,7 @@ interface CustomSectionPageProps {
 
 export const CustomSectionPage: React.FC<CustomSectionPageProps> = ({ sectionConfig, customSectionData, showMusicPlayer }) => {
   const { content } = useContent();
-
-  // A future improvement could be to allow custom backgrounds per section in the admin UI.
-  // For now, let's attempt to find a background config by ID if it exists, otherwise default.
-  const bg = (content.backgrounds as any)[customSectionData.id] || { type: 'color', value: '#0D0D0D' };
+  const bg = (content.backgrounds as any)[`custom_${customSectionData.id}`] || { type: 'color', value: '#0D0D0D' };
   
   const bgStyle: React.CSSProperties = 
     bg.type === 'image' 
@@ -23,7 +20,7 @@ export const CustomSectionPage: React.FC<CustomSectionPageProps> = ({ sectionCon
     : { backgroundColor: bg.value };
   
   return (
-    <section id={`custom-${customSectionData.id}`} className="py-20 relative" style={bgStyle}>
+    <section id={sectionConfig.id} className="py-20 relative" style={bgStyle}>
        {bg.type === 'image' && <div className="absolute inset-0 bg-black/70 z-0"></div>}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {sectionConfig.showTitle && (

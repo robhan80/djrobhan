@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, SectionConfig, CustomSection, AppContent } from './types';
+import { View, SectionConfig, CustomSection } from './types';
 import { LandingPage } from './pages/LandingPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { TestimonialsPage } from './pages/TestimonialsPage';
@@ -200,7 +200,7 @@ const renderSection = (section: SectionConfig, allCustomSections: CustomSection[
     }
 }
 
-const AppContent: React.FC = () => {
+const AppContentComponent: React.FC = () => {
   const [view, setView] = useState<View>(View.Main);
   const [activeSection, setActiveSection] = useState('home');
   const { content } = useContent();
@@ -263,7 +263,7 @@ const AppContent: React.FC = () => {
 export default function App() {
     return (
         <ContentProvider>
-            <AppContent />
+            <AppContentComponent />
         </ContentProvider>
     )
 }

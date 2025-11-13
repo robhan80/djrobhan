@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { AppContent } from '../types';
 import { initialData } from '../initialData';
 
-const CONTENT_STORAGE_KEY = 'djSparkContent';
+const CONTENT_STORAGE_KEY = 'djAppContent';
 
 interface ContentContextType {
   content: AppContent;

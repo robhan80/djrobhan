@@ -50,7 +50,7 @@ export interface SectionBackgrounds {
   services: BackgroundSettings;
   testimonials: BackgroundSettings;
   booking: BackgroundSettings;
-  gallery: BackgroundSettings; // Added for new section
+  gallery: BackgroundSettings;
 }
 
 export interface Logo {

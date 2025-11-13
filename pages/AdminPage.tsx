@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useContent } from '../hooks/useContent';
 import { AppContent, SectionBackgrounds, BackgroundSettings, View, Track, Logo, ThemeColors, SectionConfig, MediaItem, CustomSection } from '../types';
@@ -317,16 +318,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
     }
 
     const SectionControls: React.FC<{section: SectionConfig, index: number}> = ({ section, index }) => (
-      <div className="flex items-center gap-4 flex-wrap justify-end">
+      <div className="flex items-center gap-4 justify-end flex-nowrap">
           <div className="flex items-center gap-2">
               <input
                   type="checkbox"
                   id={`showTitle-${section.id}`}
                   checked={section.showTitle}
                   onChange={e => handleSectionConfigChange(section.id, 'showTitle', e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                  className="w-4 h-4 accent-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
               />
-              <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300">Vis Tittel</label>
+              <label htmlFor={`showTitle-${section.id}`} className="text-sm text-gray-300 whitespace-nowrap">Vis Tittel</label>
           </div>
           <div className="flex items-center gap-2">
               <input
@@ -334,11 +335,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
                   id={`enabled-${section.id}`}
                   checked={section.enabled}
                   onChange={e => handleSectionConfigChange(section.id, 'enabled', e.target.checked)}
-                  className="w-4 h-4 text-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
+                  className="w-4 h-4 accent-[var(--color-primary)] bg-dark-1 border-gray-600 rounded focus:ring-[var(--color-primary)]"
               />
               <label htmlFor={`enabled-${section.id}`} className="text-sm text-gray-300">Synlig</label>
           </div>
-          <div className="space-x-1">
+          <div className="flex items-center gap-1">
               <button onClick={() => handleSectionOrderChange(index, 'up')} disabled={index === 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Opp</button>
               <button onClick={() => handleSectionOrderChange(index, 'down')} disabled={index === localContent.sectionOrder.length - 1} className={`${secondaryButtonClass} disabled:opacity-50 disabled:cursor-not-allowed`}>Flytt Ned</button>
           </div>
@@ -522,9 +523,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setView }) => {
 
                       return (
                         <div key={section.id} className={sectionBoxClass}>
-                           <div className="flex justify-between items-center gap-4 w-full mb-4 border-b border-dark-3 pb-4 flex-wrap md:flex-nowrap">
-                              <h3 className="text-2xl font-bold text-white whitespace-nowrap">{sectionLabel}</h3>
-                              <SectionControls section={section} index={index}/>
+                          <div className="flex items-center justify-between gap-4 w-full flex-nowrap border-b border-dark-3 pb-4 mb-4">
+                              <h3 className="text-2xl font-bold text-white flex-grow whitespace-nowrap overflow-hidden text-ellipsis">{sectionLabel}</h3>
+                              <div className="flex-shrink-0">
+                                <SectionControls section={section} index={index}/>
+                              </div>
                           </div>
                           {getSectionContent()}
                         </div>
