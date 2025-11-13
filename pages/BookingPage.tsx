@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useContent } from '../hooks/useContent';
 import { SectionConfig } from '../types';
